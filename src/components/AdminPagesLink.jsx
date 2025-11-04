@@ -6,18 +6,25 @@ const AdminPagesLink = () => {
   const { user } = useSelector(selectAuth)
 
   return (
-    <div>
-      {['owner'].includes(user?.role) && (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px', // расстояние между ссылками
+      }}
+    >
+      {user?.role === 'owner' && (
         <>
-          <Link to="/admin-panel/all-universities">Universities</Link>
-          <Link to="/admin-panel/all-universities">Universities</Link>
-          <Link to="/admin-panel/all-universities">Universities</Link>
-          <Link to="/admin-panel/all-universities">Universities</Link>
-          <Link to="/admin-panel/all-universities">Universities</Link>
+          <Link to="/admin-panel/all-universities">Все университеты</Link>
+          <Link to="/admin-panel/">Статистика</Link>
+          <Link to="/admin-panel/">Менеджеры</Link>
+          <Link to="/admin-panel/">Учителя</Link>
+          <Link to="/admin-panel/">Студенты</Link>
         </>
       )}
-      {['superadmin'].includes(user?.role) && (
-        <Link to="/admin-panel/universities-profile">University profile</Link>
+
+      {user?.role === 'superadmin' && (
+        <Link to="/admin-panel/universities-profile">Панель супер-админа</Link>
       )}
     </div>
   )

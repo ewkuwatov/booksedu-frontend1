@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { selectUniver } from '../../../store'
-import { useEffect, useState, Fragment } from 'react'
+import { useEffect, useState } from 'react'
 import {
   fetchAddUnvierThunk,
   fetchAllUniverThunk,
@@ -8,12 +8,14 @@ import {
   fetchUpdateUnvierThunk,
 } from '../../../features/admins/univerSlice'
 import Button from '../../../components/UI/Button'
+import CustomSelect from '../../../components/UI/CustomSelect'
+import { UniverAddress } from '../../../utils/unums'
 
 const OwnerUnivers = () => {
   const dispatch = useDispatch()
   const { items, loading, error } = useSelector(selectUniver)
 
-  const [showForm, setShowForm] = useState(false) // ✅ Одна форма
+  const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
 
   const [form, setForm] = useState({
@@ -29,14 +31,10 @@ const OwnerUnivers = () => {
     dispatch(fetchAllUniverThunk())
   }, [dispatch])
 
-  const fields = [
-    { name: 'name', placeholder: 'Название' },
-    { name: 'description', placeholder: 'Описание' },
-    { name: 'address', placeholder: 'Адрес' },
-    { name: 'phone', placeholder: 'Телефон' },
-    { name: 'email', placeholder: 'Email', type: 'email' },
-    { name: 'location', placeholder: 'Локация' },
-  ]
+  const addressOptions = Object.entries(UniverAddress).map(([key, label]) => ({
+    value: label,
+    label,
+  }))
 
   const resetForm = () => {
     setForm({
@@ -50,20 +48,17 @@ const OwnerUnivers = () => {
     setEditingId(null)
   }
 
-  // ✅ Открыть форму на добавление
   const openAddForm = () => {
     resetForm()
     setShowForm(true)
   }
 
-  // ✅ Открыть форму на редактирование
   const openEditForm = (u) => {
     setForm({ ...u })
     setEditingId(u.id)
     setShowForm(true)
   }
 
-  // ✅ Сохранение (добавление или редактирование)
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -94,21 +89,31 @@ const OwnerUnivers = () => {
         Добавить университет
       </Button>
 
-      {/* ✅ ОДНА ФОРМА - условное отображение */}
       {showForm && (
         <form
           onSubmit={handleSubmit}
           style={{ marginBottom: 20, padding: 10, border: '1px solid #ccc' }}
         >
-          {fields.map((f) => (
-            <input
-              key={f.name}
-              type={f.type || 'text'}
-              placeholder={f.placeholder}
-              value={form[f.name]}
-              onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
-            />
-          ))}
+          {/* ✅ Кастомный select */}
+          <CustomSelect
+            value={form.address}
+            onChange={(v) => setForm({ ...form, address: v })}
+            options={addressOptions}
+            placeholder="Выберите область"
+          />
+
+          {/* Остальные поля */}
+          {['name', 'description', 'phone', 'email', 'location'].map(
+            (field) => (
+              <input
+                key={field}
+                placeholder={field}
+                value={form[field]}
+                onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+                style={{ display: 'block', marginBottom: 8 }}
+              />
+            )
+          )}
 
           <Button type="submit">{editingId ? 'Сохранить' : 'Добавить'}</Button>
           <Button
@@ -130,7 +135,6 @@ const OwnerUnivers = () => {
         {items.map((u) => (
           <li key={u.id} style={{ marginBottom: 10 }}>
             <strong>{u.name}</strong>
-
             <Button onClick={() => openEditForm(u)}>Редактировать</Button>
             <Button onClick={() => handlerDelete(u.id)}>Удалить</Button>
           </li>
