@@ -12,6 +12,7 @@ export default function Header() {
     dispatch(logoutThunk())
     navigate('/') // чтобы не остаться на приватной странице
   }
+  console.log('👤 ROLE:', user?.role)
 
   return (
     <header style={{ padding: '16px', borderBottom: '1px solid #ddd' }}>
