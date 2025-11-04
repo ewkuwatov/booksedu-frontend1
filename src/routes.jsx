@@ -8,6 +8,8 @@ import MainLayout from './layouts/MainLayout'
 import AdminPanel from './pages/administration/AdminPanel'
 import OwnerUnivers from './pages/administration/owner/ownerUnivers'
 import AdminLayout from './layouts/AdminLayout'
+import OwnerAdmins from './pages/administration/owner/OwnerAdmins'
+import AdminUnivers from './pages/administration/superadmin/AdminUnivers'
 
 export const router = createBrowserRouter([
   // Публичные страницы
@@ -32,10 +34,13 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { index: true, element: <AdminPanel /> }, // главная админки
-              { path: 'all-universities', element: <OwnerUnivers /> },
+              { path: 'universities', element: <OwnerUnivers /> },
+              { path: 'admins', element: <OwnerAdmins /> },
+
+              { path: 'univer-profile', element: <AdminUnivers /> },
             ],
           },
-          { path: '/admin-panel/all-universities', element: <OwnerUnivers /> },
+          // { path: '/admin-panel/all-universities', element: <OwnerUnivers /> },
         ],
       },
     ],

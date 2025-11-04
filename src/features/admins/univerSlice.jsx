@@ -64,6 +64,7 @@ export const fetchDeleteUniverThunk = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       await http.delete(`/universities/${id}`)
+      return id
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.detail || 'delete Univer failed'
@@ -100,8 +101,8 @@ const univerSlice = createSlice({
       .addCase(fetchUnvierByIdThunk.fulfilled, (s, action) => {
         s.selected = action.payload
       })
-      
-      // ---- ADD ---- 
+
+      // ---- ADD ----
       .addCase(fetchAddUnvierThunk.fulfilled, (s, action) => {
         s.items.push(action.payload) // Добавили новый элемент в state
       })
@@ -112,6 +113,7 @@ const univerSlice = createSlice({
         s.items = s.items.map((u) => (u.id === updated.id ? updated : u))
         if (s.selected?.id === updated.id) s.selected = updated
       })
+      // ---- DELETE ----
       .addCase(fetchDeleteUniverThunk.fulfilled, (s, action) => {
         const deletedId = action.payload
         s.items = s.items.filter((u) => u.id !== deletedId)
