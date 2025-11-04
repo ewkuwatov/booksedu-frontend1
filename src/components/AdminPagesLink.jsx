@@ -15,16 +15,13 @@ const AdminPagesLink = () => {
     >
       {user?.role === 'owner' && (
         <>
-          <Link to="/admin-panel/all-universities">Все университеты</Link>
-          <Link to="/admin-panel/">Статистика</Link>
-          <Link to="/admin-panel/">Менеджеры</Link>
-          <Link to="/admin-panel/">Учителя</Link>
-          <Link to="/admin-panel/">Студенты</Link>
+          <Link to="/admin-panel/universities">Universities</Link>
+          <Link to="/admin-panel/admins">Admins</Link>
         </>
       )}
 
       {user?.role === 'superadmin' && (
-        <Link to="/admin-panel/universities-profile">Панель супер-админа</Link>
+        <Link to="/admin-panel/univer-profile">Univer</Link>
       )}
     </div>
   )

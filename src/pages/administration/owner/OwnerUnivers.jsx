@@ -31,7 +31,7 @@ const OwnerUnivers = () => {
     dispatch(fetchAllUniverThunk())
   }, [dispatch])
 
-  const addressOptions = Object.entries(UniverAddress).map(([key, label]) => ({
+  const addressOptions = Object.entries(UniverAddress).map(([label]) => ({
     value: label,
     label,
   }))
