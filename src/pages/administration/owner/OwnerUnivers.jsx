@@ -94,14 +94,6 @@ const OwnerUnivers = () => {
           onSubmit={handleSubmit}
           style={{ marginBottom: 20, padding: 10, border: '1px solid #ccc' }}
         >
-          {/* ✅ Кастомный select */}
-          <CustomSelect
-            value={form.address}
-            onChange={(v) => setForm({ ...form, address: v })}
-            options={addressOptions}
-            placeholder="Выберите область"
-          />
-
           {/* Остальные поля */}
           {['name', 'description', 'phone', 'email', 'location'].map(
             (field) => (
@@ -114,7 +106,13 @@ const OwnerUnivers = () => {
               />
             )
           )}
-
+          {/* ✅ Кастомный select */}
+          <CustomSelect
+            value={form.address}
+            onChange={(v) => setForm({ ...form, address: v })}
+            options={addressOptions}
+            placeholder="Выберите область"
+          />
           <Button type="submit">{editingId ? 'Сохранить' : 'Добавить'}</Button>
           <Button
             type="button"

@@ -62,6 +62,7 @@ export const fetchDeletedAdminThunk = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       await http.delete(`/admins/${id}`)
+      return id
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.detail || 'Admins deleted failed'

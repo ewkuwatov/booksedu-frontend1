@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import {
   fetchAllAdminsThunk,
   fetchCreateAdminThunk,
+  fetchDeletedAdminThunk,
+  fetchUpdateAdminThunk,
 } from '../../../features/admins/adminSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import Input from '../../../components/UI/Input'
@@ -20,6 +22,8 @@ const OwnerAdmins = () => {
     role: 'superadmin',
     university_id: null,
   })
+  const [openForm, setOpenForm] = useState(false)
+  const [editingId, setEditingId] = useState(null)
 
   useEffect(() => {
     dispatch(fetchAllAdminsThunk())
@@ -32,56 +36,86 @@ const OwnerAdmins = () => {
       role: 'superadmin',
       university_id: null,
     })
+    setEditingId(null)
   }
 
-  const handleAddAdmin = async (e) => {
+  const startEditing = (a) => {
+    setEditingId(a.id)
+    setForm({ ...a })
+    setOpenForm(true)
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.email.trim()) return
 
-    await dispatch(fetchCreateAdminThunk(form)).unwrap()
+    if (editingId) {
+      await dispatch(
+        fetchUpdateAdminThunk({ id: editingId, updated: form })
+      ).unwrap()
+    } else {
+      await dispatch(fetchCreateAdminThunk(form)).unwrap()
+    }
     await dispatch(fetchAllAdminsThunk()).unwrap()
     resetForm()
+    setOpenForm(false)
+  }
+
+  const handleDeleteAdmin = async (id) => {
+    await dispatch(fetchDeletedAdminThunk(id)).unwrap()
+    await dispatch(fetchAllAdminsThunk()).unwrap()
   }
 
   return (
     <div>
       <h1>All Admins</h1>
 
-      <form onSubmit={handleAddAdmin} style={{ marginBottom: 20 }}>
-        <Input
-          placeholder="Email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
-        <Input
-          placeholder="Password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
-        <select
-          value={form.role}
-          onChange={(e) => setForm({ ...form, role: e.target.value })}
-        >
-          <option value="owner">owner</option>
-          <option value="superadmin">superadmin</option>
-        </select>
+      <button onClick={() => setOpenForm(true)}>Add admin</button>
 
-        <select
-          value={form.university_id || ''}
-          onChange={(e) =>
-            setForm({ ...form, university_id: e.target.value || null })
-          }
-        >
-          <option value="">Без привязки</option>
-          {univers.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name}
-            </option>
+      {openForm && (
+        <form onSubmit={handleSubmit} style={{ marginBottom: 20 }}>
+          {['email', 'password'].map((field) => (
+            <Input
+              placeholder={field}
+              key={field}
+              value={form[field]}
+              onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+            />
           ))}
-        </select>
+          <select
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+          >
+            <option value="owner">owner</option>
+            <option value="superadmin">superadmin</option>
+          </select>
 
-        <Button type="submit">Add</Button>
-      </form>
+          <select
+            value={form.university_id || ''}
+            onChange={(e) =>
+              setForm({ ...form, university_id: e.target.value || null })
+            }
+          >
+            <option value="">Без привязки</option>
+            {univers.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.name}
+              </option>
+            ))}
+          </select>
+
+          <Button type="submit">{editingId ? 'Save' : 'Add'}</Button>
+          <Button
+            type="reset"
+            onClick={() => {
+              resetForm()
+              setOpenForm()
+            }}
+          >
+            back
+          </Button>
+        </form>
+      )}
 
       <table border={1} cellPadding={6}>
         <thead>
@@ -90,6 +124,7 @@ const OwnerAdmins = () => {
             <th>Email</th>
             <th>Role</th>
             <th>University</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -100,6 +135,10 @@ const OwnerAdmins = () => {
               <td>{a.role}</td>
               <td>
                 {univers.find((u) => u.id === a.university_id)?.name || '-'}
+              </td>
+              <td>
+                <button onClick={() => handleDeleteAdmin(a.id)}>delete</button>
+                <button onClick={() => startEditing(a)}>edit</button>
               </td>
             </tr>
           ))}
