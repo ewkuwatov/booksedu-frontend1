@@ -3,6 +3,7 @@ import authReducer from '../features/auth/authSlice'
 import universReducer from '../features/admins/univerSlice'
 import adminsReducer from '../features/admins/adminSlice'
 import usersReducer from '../features/admins/userSlice'
+import directionsReducer from '../features/admins/directionSlice'
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     univers: universReducer,
     admins: adminsReducer,
     users: usersReducer,
+    directions: directionsReducer,
   },
 })
 
@@ -17,3 +19,4 @@ export const selectAuth = (state) => state.auth
 export const selectUniver = (state) => state.univers
 export const selectAdmin = (state) => state.admins
 export const selectUser = (state) => state.users
+export const selectDirection = (state) => state.directions
