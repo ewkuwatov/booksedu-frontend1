@@ -1,84 +1,71 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { selectDirection, selectUniver } from '../../../store'
 import { useEffect, useState } from 'react'
+import { selectDirection, selectUniver } from '../../../store'
 import {
   fetchAddDirectionThunk,
   fetchAllDirectionThunk,
   fetchDeleteDirectionThunk,
   fetchUpdateDirectionThunk,
 } from '../../../features/admins/directionSlice'
+import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
+
+import { useCrud } from '../../../hooks/useCrud'
 import Input from '../../../components/UI/Input'
 import Button from '../../../components/UI/Button'
-import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 
 const OwnerDirections = () => {
   const dispatch = useDispatch()
   const { items: directions } = useSelector(selectDirection)
   const { items: univers } = useSelector(selectUniver)
-  const [openForm, setOpenForm] = useState(false)
-  const [editingId, setEditingId] = useState(null)
-  const [filterUniver, setFilterUniver] = useState('')
-  const [form, setForm] = useState({
-    number: '',
-    name: '',
-    course: 1,
-    student_count: null,
-    university_id: null,
-  })
 
-  useEffect(() => {
-    dispatch(fetchAllDirectionThunk()).unwrap()
-    dispatch(fetchAllUniverThunk()).unwrap()
-  }, [dispatch])
-
-  const resetForm = () => {
-    setForm({
+  // ---- CRUD ХУК ----
+  const {
+    form,
+    setForm,
+    openForm,
+    setOpenForm,
+    editingId,
+    startEditing,
+    handleSubmit,
+    handleDelete,
+    resetForm,
+  } = useCrud({
+    initialForm: {
       number: '',
       name: '',
       course: 1,
       student_count: null,
       university_id: null,
-    })
-  }
+    },
+    fetchAll: () => dispatch(fetchAllDirectionThunk()).unwrap(),
+    add: (data) => dispatch(fetchAddDirectionThunk(data)).unwrap(),
+    update: (id, data) =>
+      dispatch(fetchUpdateDirectionThunk({ id, updated: data })).unwrap(),
+    remove: (id) => dispatch(fetchDeleteDirectionThunk(id)).unwrap(),
+  })
 
-  const startEditing = (d) => {
-    setEditingId(d.id)
-    setForm({ ...d })
-    setOpenForm(true)
-  }
+  useEffect(() => {
+    dispatch(fetchAllUniverThunk()).unwrap()
+  }, [dispatch])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!form.number.trim() && !form.name.trim()) return
+  const [filterUniver, setFilterUniver] = useState('')
 
-    if (editingId) {
-      await dispatch(
-        fetchUpdateDirectionThunk({ id: editingId, updated: form })
-      ).unwrap()
-    } else {
-      await dispatch(fetchAddDirectionThunk(form)).unwrap()
-    }
-
-    await dispatch(fetchAllDirectionThunk()).unwrap()
-    resetForm()
-    setOpenForm(false)
-  }
-
-  const handleDelete = async (id) => {
-    await dispatch(fetchDeleteDirectionThunk(id)).unwrap()
-    dispatch(fetchAllDirectionThunk()).unwrap()
-  }
-
-  const filteredDirections = filterUniver
+  const filtered = filterUniver
     ? directions.filter((d) => d.university_id === Number(filterUniver))
     : directions
 
   return (
     <div>
-      <button onClick={() => setOpenForm(true)}>Add</button>
+      <Button
+        onClick={() => {
+          resetForm()
+          setOpenForm(true)
+        }}
+      >
+        Add Direction
+      </Button>
 
-      {/* ✅ ФИЛЬТР */}
-
+      {/* ФИЛЬТР */}
       <select
         value={filterUniver}
         onChange={(e) => setFilterUniver(e.target.value)}
@@ -94,18 +81,22 @@ const OwnerDirections = () => {
       {openForm && (
         <form onSubmit={handleSubmit}>
           <Input
-            placeholder={'Number'}
+            placeholder="Number"
             value={form.number}
             onChange={(e) => setForm({ ...form, number: e.target.value })}
           />
+
           <Input
-            placeholder={'Name'}
+            placeholder="Name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
+
           <select
             value={form.course}
-            onChange={(e) => setForm({ ...form, course: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, course: Number(e.target.value) })
+            }
           >
             <option value={1}>1</option>
             <option value={2}>2</option>
@@ -114,20 +105,20 @@ const OwnerDirections = () => {
           </select>
 
           <Input
-            type={'number'}
-            placeholder={'Student Count'}
-            value={form.student_count}
+            type="number"
+            placeholder="Student Count"
+            value={form.student_count ?? ''}
             onChange={(e) =>
-              setForm({ ...form, student_count: e.target.value })
+              setForm({ ...form, student_count: Number(e.target.value) })
             }
           />
 
           <select
-            value={form.university_id || '-'}
+            value={form.university_id ?? ''}
             onChange={(e) =>
               setForm({
                 ...form,
-                university_id: Number(e.target.value) || null,
+                university_id: e.target.value ? Number(e.target.value) : null,
               })
             }
           >
@@ -139,9 +130,9 @@ const OwnerDirections = () => {
             ))}
           </select>
 
-          <Button type={'Submit'}>{editingId ? 'Save' : 'Add'}</Button>
+          <Button type="submit">{editingId ? 'Save' : 'Add'}</Button>
           <Button
-            type={'Reset'}
+            type="button"
             onClick={() => {
               resetForm()
               setOpenForm(false)
@@ -151,19 +142,20 @@ const OwnerDirections = () => {
           </Button>
         </form>
       )}
+
       <table>
         <thead>
           <tr>
-            <th>Direction number</th>
+            <th>Number</th>
             <th>Name</th>
-            <th>course</th>
-            <th>Student count</th>
+            <th>Course</th>
+            <th>Students</th>
             <th>University</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {filteredDirections.map((d) => (
+          {filtered.map((d) => (
             <tr key={d.id}>
               <td>{d.number}</td>
               <td>{d.name}</td>
@@ -173,8 +165,8 @@ const OwnerDirections = () => {
                 {univers.find((u) => u.id === d.university_id)?.name || '-'}
               </td>
               <td>
-                <button onClick={() => startEditing(d)}>edit</button>
-                <button onClick={() => handleDelete(d.id)}>delete</button>
+                <button onClick={() => startEditing(d)}>Edit</button>
+                <button onClick={() => handleDelete(d.id)}>Delete</button>
               </td>
             </tr>
           ))}

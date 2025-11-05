@@ -92,7 +92,7 @@ const directionSlice = createSlice({
 
       .addCase(fetchDeleteDirectionThunk.fulfilled, (s, action) => {
         const deletedId = action.payload
-        s.items = s.items.filter((d) => d.is !== deletedId)
+        s.items = s.items.filter((d) => d.id !== deletedId)
         if (s.current?.id === deletedId) s.current = null
       })
   },
