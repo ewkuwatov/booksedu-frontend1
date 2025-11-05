@@ -10,6 +10,7 @@ import OwnerUnivers from './pages/administration/owner/ownerUnivers'
 import AdminLayout from './layouts/AdminLayout'
 import OwnerAdmins from './pages/administration/owner/OwnerAdmins'
 import AdminUnivers from './pages/administration/superadmin/AdminUnivers'
+import OwnerUsers from './pages/administration/owner/OwnerUsers'
 
 export const router = createBrowserRouter([
   // Публичные страницы
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
               { index: true, element: <AdminPanel /> }, // главная админки
               { path: 'universities', element: <OwnerUnivers /> },
               { path: 'admins', element: <OwnerAdmins /> },
+              { path: 'users', element: <OwnerUsers/> },
 
               { path: 'univer-profile', element: <AdminUnivers /> },
             ],
