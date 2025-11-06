@@ -13,6 +13,9 @@ import AdminUnivers from './pages/administration/superadmin/AdminUnivers'
 import OwnerUsers from './pages/administration/owner/OwnerUsers'
 import OwnerDirections from './pages/administration/owner/OwnerDirections'
 import OwnerKafedras from './pages/administration/owner/OwnerKafedras'
+import OwnerSubjects from './pages/administration/owner/OwnerSubjects'
+import OwnerLiteratures from './pages/administration/owner/OwnerLiteratures'
+import OwnerStatistics from './pages/administration/owner/OwnerStatistics'
 
 export const router = createBrowserRouter([
   // Публичные страницы
@@ -43,6 +46,9 @@ export const router = createBrowserRouter([
 
               { path: 'directions', element: <OwnerDirections /> },
               { path: 'kafedras', element: <OwnerKafedras /> },
+              { path: 'subjects', element: <OwnerSubjects /> },
+              { path: 'literatures', element: <OwnerLiteratures /> },
+              { path: 'statistics', element: <OwnerStatistics /> },
 
               { path: 'univer-profile', element: <AdminUnivers /> },
             ],
