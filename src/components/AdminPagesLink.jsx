@@ -20,6 +20,9 @@ const AdminPagesLink = () => {
           <Link to="/admin-panel/users">Users</Link>
           <Link to="/admin-panel/directions">Directions</Link>
           <Link to="/admin-panel/kafedras">Kafedras</Link>
+          <Link to="/admin-panel/subjects">Subjects</Link>
+          <Link to="/admin-panel/literatures">Literatures</Link>
+          <Link to="/admin-panel/statistics">Statistics</Link>
         </>
       )}
 
