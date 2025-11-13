@@ -49,66 +49,70 @@ const OwnerKafedras = () => {
     : kafedras
 
   return (
-    <div>
+    <div className="kafedra-admin">
       <button
         onClick={() => {
           resetForm()
           setOpenForm(true)
         }}
+        className="primary-btn"
       >
         Add Kafedra
       </button>
 
       {openForm && (
-        <form onSubmit={handleSubmit}>
-          <Input
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder={'Name'}
-          />
-          <select
-            value={form.university_id ?? ''}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                university_id: e.target.value ? Number(e.target.value) : null,
-              })
-            }
-          >
-            <option value="">Без привязки</option>
-            {univers.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
-              </option>
-            ))}
-          </select>
+        <div className="modal-overlay">
+          <form onSubmit={handleSubmit} className="kafedra-form">
+            <Input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder={'Name'}
+            />
+            <select
+              value={form.university_id ?? ''}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  university_id: e.target.value ? Number(e.target.value) : null,
+                })
+              }
+            >
+              <option value="">Без привязки</option>
+              {univers.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name}
+                </option>
+              ))}
+            </select>
 
-          <button type={'submit'}>{editingId ? 'Save' : 'Add'}</button>
-          <button
-            type="button"
-            onClick={() => {
-              resetForm()
-              setOpenForm(false)
-            }}
-          >
-            Back
-          </button>
-        </form>
+            <button type={'submit'}>{editingId ? 'Save' : 'Add'}</button>
+            <button
+              type="button"
+              onClick={() => {
+                resetForm()
+                setOpenForm(false)
+              }}
+            >
+              Back
+            </button>
+          </form>
+        </div>
       )}
+      <div className="filter-block">
+        <select
+          value={filterUniver}
+          onChange={(e) => setFilterUniver(e.target.value)}
+        >
+          <option value="">All Univers</option>
+          {univers.map((u) => (
+            <option key={u.id} value={u.id}>
+              {u.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <select
-        value={filterUniver}
-        onChange={(e) => setFilterUniver(e.target.value)}
-      >
-        <option value="">All Univers</option>
-        {univers.map((u) => (
-          <option key={u.id} value={u.id}>
-            {u.name}
-          </option>
-        ))}
-      </select>
-
-      <table>
+      <table className="kafedra-table">
         <thead>
           <tr>
             <th>#</th>
@@ -126,8 +130,15 @@ const OwnerKafedras = () => {
                 {univers.find((u) => u.id === k.university_id)?.name || '-'}
               </td>
               <td>
-                <button onClick={() => startEditing(k)}>Edit</button>
-                <button onClick={() => handleDelete(k.id)}>Delete</button>
+                <button className="edit-btn" onClick={() => startEditing(k)}>
+                  Edit
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDelete(k.id)}
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}

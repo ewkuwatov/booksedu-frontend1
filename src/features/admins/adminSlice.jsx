@@ -90,7 +90,7 @@ const adminSlice = createSlice({
       })
       .addCase(fetchAllAdminsThunk.fulfilled, (s, action) => {
         s.loading = false
-        s.items = action.payload
+        s.items = action.payload.sort((a, b) => a.id - b.id)
       })
       .addCase(fetchAllAdminsThunk.rejected, (s, action) => {
         s.loading = false

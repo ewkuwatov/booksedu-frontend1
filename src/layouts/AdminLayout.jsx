@@ -1,22 +1,24 @@
 import AdminPagesLink from '../components/AdminPagesLink'
-import { Outlet } from 'react-router-dom'
+import OwnerStatistics from '../pages/administration/owner/OwnerStatistics'
+import { Outlet, Link } from 'react-router-dom'
 
 const AdminLayout = () => {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <div className="adminLayout">
       {/* ЛЕВАЯ СТОРОНА - МЕНЮ */}
-      <aside
-        style={{
-          width: '250px',
-          borderRight: '1px solid #ddd',
-          padding: '20px',
-        }}
-      >
-        <AdminPagesLink />
+      <aside className="aside">
+        <div>
+          <AdminPagesLink />
+          <OwnerStatistics />
+        </div>
+
+        <Link className="backToSite" to="/">
+          Exit
+        </Link>
       </aside>
 
       {/* ПРАВАЯ СТОРОНА - КОНТЕНТ */}
-      <main style={{ flex: 1, padding: '20px' }}>
+      <main className="main">
         <Outlet />
       </main>
     </div>

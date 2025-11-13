@@ -1,0 +1,381 @@
+/* ===== Общий контейнер ===== */
+.universities-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.universities-admin h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #222;
+}
+
+/* ===== Кнопка открытия формы ===== */
+.toggle-form-btn {
+  align-self: flex-start;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #009367;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.toggle-form-btn:hover {
+  background: #007a55;
+  transform: translateY(-2px);
+}
+
+.form-container,
+.univer-form {
+  overflow: visible; /* позволяем выпадашке вылезать */
+}
+
+/* ===== Форма ===== */
+.form-container {
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+}
+
+.univer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.univer-form input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.univer-form input:focus {
+  border-color: #009367;
+  box-shadow: 0 0 0 2px rgba(0, 147, 103, 0.2);
+}
+
+/* Кнопки внутри формы */
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.form-actions button[type='submit'] {
+  background: #009367;
+  color: #fff;
+}
+
+.form-actions button[type='submit']:hover {
+  background: #007a55;
+}
+
+.form-actions button[type='button'] {
+  background: #f0f0f0;
+}
+
+.form-actions button[type='button']:hover {
+  background: #e0e0e0;
+}
+
+/* ===== Список университетов ===== */
+.univer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.univer-list li {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.univer-list li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Заголовок университета ===== */
+.univer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.univer-header strong {
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #009367;
+  transition: color 0.2s;
+}
+
+.univer-header strong:hover {
+  color: #007a55;
+}
+
+.univer-header button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #d33;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.univer-header button:hover {
+  background: #ffe5e5;
+}
+
+/* ===== Детали университета ===== */
+.univer-info {
+  margin-top: 15px;
+  padding: 15px;
+  border-top: 1px solid #eaeaea;
+}
+
+.univer-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.univer-actions button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.univer-actions button:first-child {
+  background: #009367;
+  color: #fff;
+}
+
+.univer-actions button:first-child:hover {
+  background: #007a55;
+}
+
+.univer-actions button:last-child {
+  background: #f0f0f0;
+}
+
+.univer-actions button:last-child:hover {
+  background: #e0e0e0;
+}
+
+/* ===== Секция деталей ===== */
+.univer-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.detail-item {
+  background: #fafafa;
+  padding: 10px 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-item .label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.detail-item .value {
+  font-weight: 500;
+  color: #222;
+}
+
+/* Контейнер дропдауна */
+.dropdown {
+  position: relative;
+  width: 100%;
+  overflow: visible; /* обязательно! */
+}
+
+/* Кнопка (отображает выбранное значение) */
+.dropdown-toggle {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.dropdown-toggle:hover {
+  border-color: #009367;
+}
+
+.dropdown-toggle:focus {
+  border-color: #009367;
+  box-shadow: 0 0 0 2px rgba(0, 147, 103, 0.2);
+}
+
+/* Иконка стрелки */
+.dropdown-toggle svg {
+  transition: transform 0.2s;
+}
+
+.dropdown.open .dropdown-toggle svg {
+  transform: rotate(180deg);
+}
+
+/* Выпадающий список */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  z-index: 2000; /* выше, чем форма */
+  max-height: 220px;
+  overflow-y: auto;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Пункт меню */
+.dropdown-item {
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #333;
+  transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+  background: #f0f0f0;
+}
+
+.dropdown-item.active {
+  background: #009367;
+  color: #fff;
+  font-weight: 600;
+}
+
+.dropdown-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  max-height: 200px;
+  overflow-y: auto;
+
+  z-index: 3000; /* выше, чем modal */
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  position: relative;
+  overflow: visible;
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.close-btn {
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

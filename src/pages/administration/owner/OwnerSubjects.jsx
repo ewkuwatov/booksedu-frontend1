@@ -142,104 +142,101 @@ const OwnerSubjects = () => {
   }
 
   return (
-    <div>
+    <div className="subjects-admin">
       <h1>📚 Subjects</h1>
-
-      <button onClick={() => setOpenForm(true)}>➕ Add Subjects</button>
-
+      <button className="primary-btn" onClick={() => setOpenForm(true)}>
+        ➕ Add Subjects
+      </button>
       {openForm && (
-        <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
-          {subjectsForm.map((subj, index) => {
-            const availableKafedras = kafedras.filter(
-              (k) => k.university_id === subj.university_id
-            )
-            const availableDirections = directions.filter(
-              (d) => d.university_id === subj.university_id
-            )
+        <div className="modal-overlay">
+          <form onSubmit={handleSubmit} className="subjects-form">
+            {subjectsForm.map((subj, index) => {
+              const availableKafedras = kafedras.filter(
+                (k) => k.university_id === subj.university_id
+              )
+              const availableDirections = directions.filter(
+                (d) => d.university_id === subj.university_id
+              )
 
-            return (
-              <div
-                key={index}
-                style={{
-                  marginBottom: 18,
-                  padding: 10,
-                  border: '1px solid #ddd',
-                  borderRadius: 6,
-                }}
-              >
-                <input
-                  placeholder="Название"
-                  value={subj.name}
-                  onChange={(e) => updateField(index, 'name', e.target.value)}
-                  style={{
-                    border: subj.error ? '1px solid red' : '1px solid #ccc',
-                    marginRight: 10,
-                  }}
-                />
+              return (
+                <div key={index} className="subject-item">
+                  <input
+                    placeholder="Название"
+                    value={subj.name}
+                    onChange={(e) => updateField(index, 'name', e.target.value)}
+                    className="subject-input"
+                  />
 
-                <select
-                  value={subj.university_id ?? ''}
-                  onChange={(e) =>
-                    updateField(index, 'university_id', Number(e.target.value))
-                  }
-                >
-                  <option value="">Университет</option>
-                  {univers.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                  <select
+                    value={subj.university_id ?? ''}
+                    onChange={(e) =>
+                      updateField(
+                        index,
+                        'university_id',
+                        Number(e.target.value)
+                      )
+                    }
+                    className="subject-select"
+                  >
+                    <option value="">Университет</option>
+                    {univers.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name}
+                      </option>
+                    ))}
+                  </select>
 
-                <select
-                  value={subj.kafedra_id ?? ''}
-                  disabled={!subj.university_id}
-                  onChange={(e) =>
-                    updateField(index, 'kafedra_id', Number(e.target.value))
-                  }
-                >
-                  <option value="">Кафедра</option>
-                  {availableKafedras.map((k) => (
-                    <option key={k.id} value={k.id}>
-                      {k.name}
-                    </option>
-                  ))}
-                </select>
+                  <select
+                    value={subj.kafedra_id ?? ''}
+                    disabled={!subj.university_id}
+                    onChange={(e) =>
+                      updateField(index, 'kafedra_id', Number(e.target.value))
+                    }
+                    className="subject-select"
+                  >
+                    <option value="">Кафедра</option>
+                    {availableKafedras.map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.name}
+                      </option>
+                    ))}
+                  </select>
 
-                {subj.error && (
-                  <p style={{ color: 'red', fontSize: 12 }}>
-                    ❗ Такой предмет уже существует в этом университете и
-                    кафедре
-                  </p>
-                )}
+                  {subj.error && (
+                    <p style={{ color: 'red', fontSize: 12 }}>
+                      ❗ Такой предмет уже существует в этом университете и
+                      кафедре
+                    </p>
+                  )}
 
-                <div style={{ marginTop: 6 }}>
-                  <strong>Направления:</strong>
-                  {availableDirections.map((d) => (
-                    <label key={d.id} style={{ display: 'block' }}>
-                      <input
-                        type="checkbox"
-                        checked={subj.direction_ids.includes(d.id)}
-                        onChange={() => toggleDirection(index, d.id)}
-                      />
-                      {d.name} ({d.course} курс)
-                    </label>
-                  ))}
+                  <div className="direction-checkboxes">
+                    <strong className="directionBtn">Направления:</strong>
+                    {availableDirections.map((d) => (
+                      <label key={d.id} style={{ display: 'block' }}>
+                        <input
+                          type="checkbox"
+                          checked={subj.direction_ids.includes(d.id)}
+                          onChange={() => toggleDirection(index, d.id)}
+                        />
+                        {d.name} ({d.course} курс)
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
 
-          <button type="button" onClick={addFormRow}>
-            ➕ Добавить ещё
-          </button>
-          <button type="submit">✅ Сохранить</button>
-          <button type="button" onClick={() => setOpenForm(false)}>
-            ✖ Отмена
-          </button>
-        </form>
+            <button type="button" onClick={addFormRow}>
+              Добавить ещё
+            </button>
+            <button type="submit">Сохранить</button>
+            <button type="button" onClick={() => setOpenForm(false)}>
+              Отмена
+            </button>
+          </form>
+        </div>
       )}
-
+      
       <select
         value={filterUniver}
         onChange={(e) => setFilterUniver(e.target.value)}
@@ -252,7 +249,6 @@ const OwnerSubjects = () => {
           </option>
         ))}
       </select>
-
       <table style={{ marginTop: 20 }}>
         <thead>
           <tr>

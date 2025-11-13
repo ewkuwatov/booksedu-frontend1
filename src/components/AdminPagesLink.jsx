@@ -22,13 +22,19 @@ const AdminPagesLink = () => {
           <Link to="/admin-panel/kafedras">Kafedras</Link>
           <Link to="/admin-panel/subjects">Subjects</Link>
           <Link to="/admin-panel/literatures">Literatures</Link>
-          <Link to="/admin-panel/statistics">Statistics</Link>
         </>
       )}
 
       {user?.role === 'superadmin' && (
-        <Link to="/admin-panel/univer-profile">Univer</Link>
+        <>
+          <Link to="/admin-panel/university-data">University</Link>
+          <Link to="/admin-panel/direction-data">Directions</Link>
+          <Link to="/admin-panel/kafedra-data">Kafedra</Link>
+          <Link to="/admin-panel/subject-data">Subject</Link>
+          <Link to="/admin-panel/literature-data">Literature</Link>
+        </>
       )}
+
     </div>
   )
 }

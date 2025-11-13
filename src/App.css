@@ -1,5 +1,4 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import './styles/administartion/AdminLayout.css';
+@import './styles/administartion/OwnerAdmins.css';
+@import './styles/administartion/UniversitiesAdmin.css';
+@import './styles/administartion/OwnerSubjects.css';

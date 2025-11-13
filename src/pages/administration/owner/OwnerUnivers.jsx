@@ -82,59 +82,69 @@ const OwnerUnivers = () => {
   }
 
   return (
-    <div>
+    <div className="universities-admin">
       <h1>Университеты</h1>
 
-      <Button onClick={openAddForm} style={{ marginBottom: 20 }}>
+      <Button className="toggle-form-btn" onClick={openAddForm}>
         Добавить университет
       </Button>
 
       {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          style={{ marginBottom: 20, padding: 10, border: '1px solid #ccc' }}
-        >
-          {/* Остальные поля */}
-          {['name', 'description', 'phone', 'email', 'location'].map(
-            (field) => (
-              <input
-                key={field}
-                placeholder={field}
-                value={form[field]}
-                onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                style={{ display: 'block', marginBottom: 8 }}
+        <div className="modal-overlay">
+          <div className="modal">
+            <form onSubmit={handleSubmit} className="univer-form">
+              {/* Остальные поля */}
+              {['name', 'description', 'phone', 'email', 'location'].map(
+                (field) => (
+                  <input
+                    key={field}
+                    placeholder={field}
+                    value={form[field]}
+                    onChange={(e) =>
+                      setForm({ ...form, [field]: e.target.value })
+                    }
+                    style={{ display: 'block', marginBottom: 8 }}
+                  />
+                )
+              )}
+              {/* ✅ Кастомный select */}
+              <CustomSelect
+                value={form.address}
+                onChange={(v) => setForm({ ...form, address: v })}
+                options={addressOptions}
+                placeholder="Выберите область"
               />
-            )
-          )}
-          {/* ✅ Кастомный select */}
-          <CustomSelect
-            value={form.address}
-            onChange={(v) => setForm({ ...form, address: v })}
-            options={addressOptions}
-            placeholder="Выберите область"
-          />
-          <Button type="submit">{editingId ? 'Сохранить' : 'Добавить'}</Button>
-          <Button
-            type="button"
-            onClick={() => {
-              resetForm()
-              setShowForm(false)
-            }}
-          >
-            Отмена
-          </Button>
-        </form>
+
+              <div className="form-actions">
+                <Button type="submit">
+                  {editingId ? 'Сохранить' : 'Добавить'}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    resetForm()
+                    setShowForm(false)
+                  }}
+                >
+                  Отмена
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {loading && <p>Загрузка...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      <ul>
+      <ul className="univer-list">
         {items.map((u) => (
           <li key={u.id} style={{ marginBottom: 10 }}>
-            <strong>{u.name}</strong>
-            <Button onClick={() => openEditForm(u)}>Редактировать</Button>
-            <Button onClick={() => handlerDelete(u.id)}>Удалить</Button>
+            <div className="univer-header">
+              <strong style={{ cursor: 'pointer' }}>{u.name}</strong>
+              <Button onClick={() => openEditForm(u)}>Редактировать</Button>
+              <Button onClick={() => handlerDelete(u.id)}>Удалить</Button>
+            </div>
           </li>
         ))}
       </ul>

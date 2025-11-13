@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { http } from '../../api/http'
 
+// === GET all subjects ===
 export const fetchAllGetSubjectsThunk = createAsyncThunk(
   'subjects/fetchAll',
   async (_, { rejectWithValue }) => {
@@ -9,26 +10,43 @@ export const fetchAllGetSubjectsThunk = createAsyncThunk(
       return data
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.detail || 'fetch all get Subjets Failed'
+        error.response?.data?.detail || 'Fetch all subjects failed'
       )
     }
   }
 )
 
+// === GET by university ID ===
+export const fetchGetByIdThunk = createAsyncThunk(
+  'subjects/fetchById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await http.get(`/subjects/university/${id}`)
+      return data
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.detail || 'Fetch subjects by university failed'
+      )
+    }
+  }
+)
+
+// === BULK ADD ===
 export const fetchAddSubjectsThunkBulk = createAsyncThunk(
-  'subjects/fetchAdd',
+  'subjects/fetchAddBulk',
   async (subjects, { rejectWithValue }) => {
     try {
       const { data } = await http.post('/subjects/bulk', subjects)
       return data
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.detail || 'fetch Add Subjets Failed'
+        error.response?.data?.detail || 'Add subjects failed'
       )
     }
   }
 )
 
+// === UPDATE ===
 export const fetchUpdateSubjectsThunk = createAsyncThunk(
   'subjects/fetchUpdate',
   async ({ id, updated }, { rejectWithValue }) => {
@@ -37,12 +55,13 @@ export const fetchUpdateSubjectsThunk = createAsyncThunk(
       return data
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.detail || 'fetch Updated Subjets Failed'
+        error.response?.data?.detail || 'Update subject failed'
       )
     }
   }
 )
 
+// === DELETE ===
 export const fetchDeleteSubjectsThunk = createAsyncThunk(
   'subjects/fetchDelete',
   async (id, { rejectWithValue }) => {
@@ -51,7 +70,7 @@ export const fetchDeleteSubjectsThunk = createAsyncThunk(
       return id
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.detail || 'fetch Delete Subjets Failed'
+        error.response?.data?.detail || 'Delete subject failed'
       )
     }
   }
@@ -61,39 +80,51 @@ const subjectSlice = createSlice({
   name: 'subjects',
   initialState: {
     items: [],
-    current: null,
+    current: null, // список предметов определенного университета
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(fetchAllGetSubjectsThunk.pending, (s) => {
-        s.loading = true
-        s.error = null
+      // === GET ALL ===
+      .addCase(fetchAllGetSubjectsThunk.pending, (state) => {
+        state.loading = true
+        state.error = null
       })
-      .addCase(fetchAllGetSubjectsThunk.fulfilled, (s, action) => {
-        s.loading = false
-        s.items = action.payload
+      .addCase(fetchAllGetSubjectsThunk.fulfilled, (state, action) => {
+        state.loading = false
+        state.items = [...action.payload].sort((a, b) => a.id - b.id)
       })
-      .addCase(fetchAllGetSubjectsThunk.rejected, (s, action) => {
-        s.error = action.payload
-      })
-
-      .addCase(fetchAddSubjectsThunkBulk.fulfilled, (s, action) => {
-        s.items.push(action.payload)
+      .addCase(fetchAllGetSubjectsThunk.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
       })
 
-      .addCase(fetchUpdateSubjectsThunk.fulfilled, (s, action) => {
+      // === GET BY UNIVERSITY ===
+      .addCase(fetchGetByIdThunk.fulfilled, (state, action) => {
+        state.current = action.payload
+      })
+
+      // === BULK ADD ===
+      .addCase(fetchAddSubjectsThunkBulk.fulfilled, (state, action) => {
+        state.items = [...state.items, ...action.payload]
+      })
+
+      // === UPDATE ===
+      .addCase(fetchUpdateSubjectsThunk.fulfilled, (state, action) => {
         const updated = action.payload
-        s.items = s.items.map((s) => (s.id === updated.id ? updated : s))
-        if (s.current?.id === updated.id) s.current = updated
+        state.items = state.items.map((item) =>
+          item.id === updated.id ? updated : item
+        )
+        if (state.current?.id === updated.id) state.current = updated
       })
 
-      .addCase(fetchDeleteSubjectsThunk.fulfilled, (s, action) => {
-        const deleteId = action.payload
-        s.items = s.items.filter((s) => s.id !== deleteId)
-        if (s.current?.id === deleteId) s.current = null
+      // === DELETE ===
+      .addCase(fetchDeleteSubjectsThunk.fulfilled, (state, action) => {
+        const deletedId = action.payload
+        state.items = state.items.filter((item) => item.id !== deletedId)
+        if (state.current?.id === deletedId) state.current = null
       })
   },
 })

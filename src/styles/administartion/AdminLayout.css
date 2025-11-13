@@ -1,0 +1,151 @@
+.adminLayout {
+  display: flex;
+  height: 100%;
+  min-height: 100vh;
+  background: linear-gradient(45deg, #000000, #009367, #000000, #000000);
+}
+
+.aside {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+  margin: 25px 5px 25px 25px;
+  border: 1px solid #ebebeb5c;
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.aside h2 {
+  color: #fff;
+  margin: 10px 0;
+}
+
+.aside a {
+  padding: 10px;
+  color: #fff;
+  margin: 3px 0;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+}
+
+.aside a:hover {
+  background: #ffffff3c;
+  transform: translateY(-2px);
+  color: #fff;
+  font-weight: 600;
+}
+
+.aside .backToSite {
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  width: 100px;
+  border: 2px solid #ff0000;
+}
+
+.main {
+  position: relative;
+  flex: 1;
+  margin: 25px 25px 25px 0;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 30px; /* 🔑 рабочая зона с отступами */
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* 🔑 зазоры между блоками в Outlet */
+}
+
+/* Заголовки внутри Outlet */
+.main h1,
+.main h2,
+.main h3 {
+  color: #222;
+  font-weight: 600;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 8px;
+}
+
+/* Таблицы в Outlet */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fafafa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.main table th,
+.main table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.main table th {
+  background: #f0f0f0;
+  font-weight: 600;
+  color: #333;
+}
+
+.main table tr:hover {
+  background: #f9f9f9;
+  transition: 0.2s;
+}
+
+/* Формы */
+.main form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+}
+
+.main input,
+.main select,
+.main textarea {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.main input:focus,
+.main select:focus,
+.main textarea:focus {
+  border-color: #009367;
+  box-shadow: 0 0 0 2px rgba(0, 147, 103, 0.2);
+}
+
+/* Кнопки */
+.main button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #009367;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.main button:hover {
+  background: #007a55;
+  transform: translateY(-2px);
+}
+
+.filter-block {
+  z-index: 0;
+}
