@@ -1,13 +1,15 @@
 import { Outlet } from 'react-router-dom'
-import Header from '../components/Layout/Header'
+import Header from '../components/Layout/Header/Header'
 import Footer from '../components/Layout/Footer'
+import Navbar from '../components/Layout/Navbar/Navbar'
 
 export default function MainLayout() {
   return (
     <div className="layout">
+      <Navbar />
       <Header />
 
-      <main style={{ minHeight: '80vh' }}>
+      <main>
         <Outlet />
       </main>
 

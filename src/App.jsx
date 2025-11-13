@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { refreshThunk } from './features/auth/authSlice'
 import { selectAuth } from './store'
 import { useEffect } from 'react'
-import Header from './components/Layout/Header'
+import './utils/i18n'
 
 export default function App() {
   const dispatch = useDispatch()

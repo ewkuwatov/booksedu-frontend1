@@ -1,8 +1,10 @@
+import Main from "../components/Layout/Main";
+
 export default function Dashboard() {
 
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Dashboard</h1>
+    <div>
+      <Main />
     </div>
   )
 }
