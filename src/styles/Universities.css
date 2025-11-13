@@ -1,0 +1,124 @@
+.universities {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.sidebarPanel {
+  width: 35%;
+  margin-right: 25px;
+}
+
+.univerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+}
+
+.univerCards {
+  width: 100%;
+}
+
+.card {
+  width: 100%;
+  min-height: 15rem;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 10px 25px;
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: rgba(54, 147, 75, 0.3) 0px 0px 25px,
+              rgba(65, 138, 241, 0.3) 0px 0px 35px;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.cardHead img {
+  width: 70px;
+  border-radius: 12px;
+}
+
+.univerName strong {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.univerName p {
+  font-size: 14px;
+  color: #418af1;
+}
+
+.cardBody {
+  margin-top: 20px;
+}
+
+.univerDescrip {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.4rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+}
+
+.univerStats {
+  display: flex;
+  gap: 20px;
+  position: absolute;
+  bottom: 20px;
+  right: 25px;
+}
+
+.univerStats p {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.univerStats p span {
+  font-weight: 600;
+  color: #418af1;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #418af1;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #2e6cd1;
+}
+
+.pagination button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination button.active {
+  background: #2ecc71;
+  font-weight: bold;
+}

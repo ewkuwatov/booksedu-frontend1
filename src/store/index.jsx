@@ -8,6 +8,7 @@ import kafedrasReducer from '../features/admins/kafedraSlice'
 import subjectsReducer from '../features/admins/subjectSlice'
 import literaturesReducer from '../features/admins/literatureSlice'
 import statisticsReducer from '../features/admins/statisticsSlice'
+import generalStatsReducer from '../features/General_stats'
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     subjects: subjectsReducer,
     literatures: literaturesReducer,
     statistics: statisticsReducer,
+    general_stats: generalStatsReducer,
   },
 })
 
@@ -32,3 +34,4 @@ export const selectKafedra = (state) => state.kafedras
 export const selectSubject = (state) => state.subjects
 export const selectLiterature = (state) => state.literatures
 export const selectStatistics = (state) => state.statistics
+export const selectGeneralStats = (state) => state.general_stats

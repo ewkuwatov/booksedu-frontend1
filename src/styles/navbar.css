@@ -1,0 +1,400 @@
+nav {
+  width: 90%;
+  max-width: 1440px;
+  position: fixed;
+  top: 8%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border-radius: 25px;
+  z-index: 10;
+  transition: background-color 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 20px 5px rgba(54, 147, 75, 0.5),
+    0 0 30px 10px rgba(65, 138, 241, 0.5);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: slideDown 0.5s ease-out;
+}
+
+.logo {
+  width: 300px;
+  overflow: hidden;
+}
+
+.logo img {
+  width: 100%;
+}
+
+.navigation {
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navConatiner {
+  display: flex;
+  gap: 25px;
+}
+
+.profilNav,
+.contactNav, .langMenu {
+  position: relative;
+}
+
+.profilNav {
+  display: flex;
+}
+
+/* Общие стили выпадающих меню */
+.profilNav ul,
+.contactNav ul {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  width: 220px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: scale(0.95) translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+/* Появление меню при ховере */
+.profilNav:hover ul,
+.contactNav:hover ul {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Элементы меню */
+.profilNav ul li,
+.contactNav ul li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.profilNav ul li:hover,
+.contactNav ul li:hover {
+  background: rgba(0, 0, 0, 0.08);
+  transform: translateX(4px);
+}
+
+/* Ссылки */
+.profilNav ul li a,
+.contactNav ul li a {
+  display: flex;
+  align-items: center;
+  color: #222;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.profilNav ul li a:hover,
+.contactNav ul li a:hover {
+  color: #007bff;
+}
+
+/* Иконки в меню */
+.profileNavSpan {
+  margin-left: 8px;
+}
+
+/* Кнопки-триггеры (иконки профиля / контакта) */
+.profile,
+.contact,
+.language {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile:hover,
+.contact:hover,
+.language:hover {
+  transform: scale(1.1);
+}
+
+/* .navMenu {
+  margin-right: 300px;
+} */
+
+.navMenu a {
+  position: relative;
+  padding: 8px 12px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navMenu a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #0072ff, rgba(54, 147, 75, 0.3));
+  transition: width 0.3s ease;
+}
+
+.navMenu a:hover::after,
+.navMenu a.active::after {
+  width: 100%;
+}
+
+/* Общие стили выпадающих меню */
+.profilNav ul,
+.contactNav ul {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  width: 220px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: scale(0.95) translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+/* Появление меню при ховере */
+.profilNav:hover ul,
+.contactNav:hover ul {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Элементы меню */
+.profilNav ul li,
+.contactNav ul li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.profilNav ul li:hover,
+.contactNav ul li:hover {
+  background: rgba(0, 0, 0, 0.08);
+  transform: translateX(4px);
+}
+
+/* Ссылки */
+.profilNav ul li a,
+.contactNav ul li a {
+  display: flex;
+  align-items: center;
+  color: #222;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.LoginNav {
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(135deg, #418af1, #36934b);
+  text-align: center;
+  transition: all 0.5s ease;
+  display: inline-block;
+}
+
+.LoginNav:hover {
+  background: linear-gradient(135deg, #36934b, #418af1);
+  opacity: 0.8;
+  transform: translateY(-2px);
+}
+
+.loginBtn {
+  color: #fff;
+  text-decoration: none;
+}
+
+.profilNav ul li a:hover,
+.contactNav ul li a:hover {
+  color: #007bff;
+}
+
+/* Иконки в меню */
+.profileNavSpan {
+  margin-left: 8px;
+}
+
+/* Кнопки-триггеры (иконки профиля / контакта) */
+.profile,
+.contact,
+.language {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.contact,
+.language {
+  margin-right: 20px;
+}
+
+.profile:hover,
+.contact:hover, .language:hover {
+  transform: scale(1.1);
+}
+
+.langMenu {
+  position: absolute;
+  top: 110%;
+  width: 220px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: scale(0.95) translateY(-10px);
+  padding: 5px;
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.langMenu button {
+  background: none;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.langMenu button:hover {
+  background: #f0f0f0;
+}
+
+
+.phoneNavigation {
+  display: none;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -100%); /* уходит вверх */
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%); /* финальная позиция */
+  }
+}
+
+/* =====================
+   📱 Телефоны
+   ===================== */
+@media (max-width: 768px) {
+  nav {
+    bottom: 0;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    border-radius: 25px 25px 0 0;
+    max-width: 1440px;
+  }
+
+  .navigation {
+    display: none;
+  }
+
+  .phoneNavigation {
+    display: block;
+  }
+
+  .phoneNavigation ul {
+    display: flex;
+    justify-content: space-around;
+    margin: 0;
+    padding: 10px 0;
+    list-style: none;
+  }
+
+  .phoneNavigation li {
+    flex: 1;
+    text-align: center;
+  }
+
+  .phoneNavigation li a,
+  .phoneNavigation li button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #333;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .phoneNavigation li a svg,
+  .phoneNavigation li button svg {
+    font-size: 20px;
+    color: #418af1;
+  }
+
+  .phoneNavigation li a:hover svg,
+  .phoneNavigation li button:hover svg {
+    transform: scale(1.2);
+  }
+
+  .phoneNavigation .loginBtn span,
+  .phoneNavigation .logoutBtn span {
+    font-weight: 600;
+  }
+
+  .phoneNavigation .logoutBtn {
+    margin: 0 auto;
+    padding: 0;
+  }
+}
+
+/* =====================
+   📱 Маленькие телефоны
+   ===================== */
+@media (max-width: 480px) {
+}
+
+/* =====================
+   📱 Планшеты (iPad и т.п.)
+   ===================== */
+@media (max-width: 1024px) {
+}
