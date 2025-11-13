@@ -1,0 +1,39 @@
+@import './App.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'SF Pro Display', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+button {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+ul {
+  list-style: none;
+  border-radius: 10px;
+}
+
+.ql-editor ol {
+  list-style-type: decimal; /* для ordered */
+  margin-left: 20px;
+}
+
+.ql-editor ul {
+  list-style-type: disc; /* для bullet */
+  margin-left: 20px;
+}

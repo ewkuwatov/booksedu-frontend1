@@ -67,57 +67,67 @@ const OwnerAdmins = () => {
   }
 
   return (
-    <div>
-      <h1>All Admins</h1>
+    <div className="admins-container">
+      <h1 className="admins-title">All Admins</h1>
 
-      <button onClick={() => setOpenForm(true)}>Add admin</button>
+      <button className="toggle-form-btn" onClick={() => setOpenForm(true)}>
+        Add admin
+      </button>
 
       {openForm && (
-        <form onSubmit={handleSubmit} style={{ marginBottom: 20 }}>
-          {['email', 'password'].map((field) => (
-            <Input
-              placeholder={field}
-              key={field}
-              value={form[field]}
-              onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-            />
-          ))}
-          <select
-            value={form.role}
-            onChange={(e) => setForm({ ...form, role: e.target.value })}
+        <div className="modal-overlay">
+          <form
+            className="admin-form"
+            onSubmit={handleSubmit}
+            style={{ marginBottom: 20 }}
           >
-            <option value="owner">owner</option>
-            <option value="superadmin">superadmin</option>
-          </select>
-
-          <select
-            value={form.university_id || ''}
-            onChange={(e) =>
-              setForm({ ...form, university_id: e.target.value || null })
-            }
-          >
-            <option value="">Без привязки</option>
-            {univers.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
-              </option>
+            {['email', 'password'].map((field) => (
+              <Input
+                placeholder={field}
+                key={field}
+                value={form[field]}
+                onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+              />
             ))}
-          </select>
+            <select
+              value={form.role}
+              onChange={(e) => setForm({ ...form, role: e.target.value })}
+            >
+              <option value="owner">owner</option>
+              <option value="superadmin">superadmin</option>
+            </select>
 
-          <Button type="submit">{editingId ? 'Save' : 'Add'}</Button>
-          <Button
-            type="reset"
-            onClick={() => {
-              resetForm()
-              setOpenForm()
-            }}
-          >
-            back
-          </Button>
-        </form>
+            <select
+              value={form.university_id || ''}
+              onChange={(e) =>
+                setForm({ ...form, university_id: e.target.value || null })
+              }
+            >
+              <option value="">Без привязки</option>
+              {univers.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name}
+                </option>
+              ))}
+            </select>
+
+            <div className="form-actions">
+              <Button type="submit">{editingId ? 'Save' : 'Add'}</Button>
+              <Button
+                type="reset"
+                onClick={() => {
+                  resetForm()
+                  setOpenForm()
+                }}
+              >
+                back
+              </Button>
+            </div>
+          </form>
+        </div>
       )}
 
-      <table border={1} cellPadding={6}>
+      <table className="admins-table">
         <thead>
           <tr>
             <th>#</th>
@@ -137,8 +147,15 @@ const OwnerAdmins = () => {
                 {univers.find((u) => u.id === a.university_id)?.name || '-'}
               </td>
               <td>
-                <button onClick={() => handleDeleteAdmin(a.id)}>delete</button>
-                <button onClick={() => startEditing(a)}>edit</button>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDeleteAdmin(a.id)}
+                >
+                  delete
+                </button>
+                <button className="edit-btn" onClick={() => startEditing(a)}>
+                  edit
+                </button>
               </td>
             </tr>
           ))}

@@ -11,8 +11,6 @@ const OwnerStatistics = () => {
 
   return (
     <div>
-      <h1>📊 Export Statistics</h1>
-
       <button
         onClick={downloadExcel}
         disabled={loading}

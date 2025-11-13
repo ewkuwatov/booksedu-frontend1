@@ -15,7 +15,10 @@ import OwnerDirections from './pages/administration/owner/OwnerDirections'
 import OwnerKafedras from './pages/administration/owner/OwnerKafedras'
 import OwnerSubjects from './pages/administration/owner/OwnerSubjects'
 import OwnerLiteratures from './pages/administration/owner/OwnerLiteratures'
-import OwnerStatistics from './pages/administration/owner/OwnerStatistics'
+import AdminDirections from './pages/administration/superadmin/AdminDirections'
+import AdminKafedra from './pages/administration/superadmin/AdminKafedra'
+import AdminSubjects from './pages/administration/superadmin/AdminSubjects'
+import AdminLiteratures from './pages/administration/superadmin/AdminLiteratures'
 
 export const router = createBrowserRouter([
   // Публичные страницы
@@ -48,9 +51,11 @@ export const router = createBrowserRouter([
               { path: 'kafedras', element: <OwnerKafedras /> },
               { path: 'subjects', element: <OwnerSubjects /> },
               { path: 'literatures', element: <OwnerLiteratures /> },
-              { path: 'statistics', element: <OwnerStatistics /> },
-
-              { path: 'univer-profile', element: <AdminUnivers /> },
+              { path: 'university-data', element: <AdminUnivers /> },
+              { path: 'direction-data', element: <AdminDirections /> },
+              { path: 'kafedra-data', element: <AdminKafedra /> },
+              { path: 'subject-data', element: <AdminSubjects /> },
+              { path: 'literature-data', element: <AdminLiteratures /> },
             ],
           },
           // { path: '/admin-panel/all-universities', element: <OwnerUnivers /> },

@@ -170,7 +170,7 @@ const literatureSlice = createSlice({
       })
       .addCase(fetchAllLiteraturesThunk.fulfilled, (s, { payload }) => {
         s.loading = false
-        s.items = payload
+        s.items = payload.sort((a, b) => a.id - b.id)
       })
       .addCase(fetchAllLiteraturesThunk.rejected, (s, { payload }) => {
         s.loading = false

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
+import { selectDirection, selectAuth, selectUniver } from '../../../store'
 import { useEffect, useState } from 'react'
-import { selectDirection, selectUniver } from '../../../store'
 import {
   fetchAddDirectionThunk,
   fetchAllDirectionThunk,
@@ -8,17 +8,17 @@ import {
   fetchUpdateDirectionThunk,
 } from '../../../features/admins/directionSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
-
-import { useCrud } from '../../../hooks/useCrud'
 import Input from '../../../components/UI/Input'
+import { useCrud } from '../../../hooks/useCrud'
 import Button from '../../../components/UI/Button'
 
-const OwnerDirections = () => {
+const AdminDirections = () => {
   const dispatch = useDispatch()
   const { items: directions } = useSelector(selectDirection)
   const { items: univers } = useSelector(selectUniver)
+  const { user } = useSelector(selectAuth)
+  const [filtered, setFiltered] = useState([])
 
-  // ---- CRUD ХУК ----
   const {
     form,
     setForm,
@@ -35,7 +35,7 @@ const OwnerDirections = () => {
       name: '',
       course: 1,
       student_count: null,
-      university_id: null,
+      university_id: user?.university_id ?? null,
     },
     fetchAll: () => dispatch(fetchAllDirectionThunk()).unwrap(),
     add: (data) => dispatch(fetchAddDirectionThunk(data)).unwrap(),
@@ -45,55 +45,42 @@ const OwnerDirections = () => {
   })
 
   useEffect(() => {
+    dispatch(fetchAllDirectionThunk()).unwrap()
     dispatch(fetchAllUniverThunk()).unwrap()
   }, [dispatch])
 
-  const [filterUniver, setFilterUniver] = useState('')
-
-  const filtered = filterUniver
-    ? directions.filter((d) => d.university_id === Number(filterUniver))
-    : directions
+  useEffect(() => {
+    if (directions.length > 0 && user?.university_id) {
+      setFiltered(
+        directions.filter((dir) => dir.university_id === user.university_id)
+      )
+    }
+  }, [directions, user])
 
   return (
-    <div className="directions-container">
+    <div>
+      <h1>Все направления вашего университета</h1>
       <Button
         onClick={() => {
           resetForm()
           setOpenForm(true)
         }}
-        className="toggle-form-btn"
       >
         Add Direction
       </Button>
-
-      {/* ФИЛЬТР */}
-      <div className="filter-block">
-        <select
-          value={filterUniver}
-          onChange={(e) => setFilterUniver(e.target.value)}
-        >
-          <option value="">All Univers</option>
-          {univers.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name}
-            </option>
-          ))}
-        </select>
-      </div>
 
       {openForm && (
         <div className="modal-overlay">
           <form className="directions-form" onSubmit={handleSubmit}>
             <Input
-              placeholder="Number"
               value={form.number}
               onChange={(e) => setForm({ ...form, number: e.target.value })}
+              placeholder={'Number'}
             />
-
             <Input
-              placeholder="Name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder={'Name'}
             />
 
             <select
@@ -107,32 +94,13 @@ const OwnerDirections = () => {
               <option value={3}>3</option>
               <option value={4}>4</option>
             </select>
-
             <Input
-              type="number"
-              placeholder="Student Count"
-              value={form.student_count ?? ''}
+              value={form.student_count || ''}
               onChange={(e) =>
                 setForm({ ...form, student_count: Number(e.target.value) })
               }
+              placeholder="Students count"
             />
-
-            <select
-              value={form.university_id ?? ''}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  university_id: e.target.value ? Number(e.target.value) : null,
-                })
-              }
-            >
-              <option value="">Без привязки</option>
-              {univers.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.name}
-                </option>
-              ))}
-            </select>
 
             <div className="form-actions">
               <Button type="submit">{editingId ? 'Save' : 'Add'}</Button>
@@ -149,6 +117,8 @@ const OwnerDirections = () => {
           </form>
         </div>
       )}
+
+      {filtered.length === 0 && <p>Нет направлений</p>}
 
       <table className="directions-table">
         <thead>
@@ -183,4 +153,4 @@ const OwnerDirections = () => {
   )
 }
 
-export default OwnerDirections
+export default AdminDirections

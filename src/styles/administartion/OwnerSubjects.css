@@ -1,0 +1,184 @@
+.subjects-admin {
+  
+  padding: 25px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+}
+
+.subjects-admin h1 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #222;
+}
+
+.primary-btn,
+.success-btn,
+.cancel-btn,
+.delete-btn {
+  padding: 8px 14px;
+  margin: 5px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.primary-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+}
+.primary-btn:hover {
+  background: #0056b3;
+}
+
+.success-btn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+}
+.success-btn:hover {
+  background: #1e7e34;
+}
+
+.cancel-btn {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+}
+.cancel-btn:hover {
+  background: #ddd;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+}
+.delete-btn:hover {
+  background: #b52a37;
+}
+
+.subjects-form {
+  width: 35rem;
+  max-height: 45rem;
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 10px;
+  background: #f9f9f9;
+  overflow-y: scroll;
+}
+
+.subject-item {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.subject-input,
+.subject-select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.direction-checkboxes {
+  margin-top: 10px;
+}
+
+.directionBtn {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.direction-list {
+  width: 250px;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.direction-list li {
+  padding: 5px;
+  
+}
+
+.direction-item {
+  padding: 5px 0;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.direction-item span{
+  margin-left: 10px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.filter-block {
+  margin: 20px 0;
+  position: relative;
+  z-index: 10;
+}
+
+.dropdown-display {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background: #fff;
+  width: 220px;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 220px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  list-style: none;
+  padding: 5px 0;
+  margin: 0;
+  z-index: 5;
+}
+
+.dropdown-list li {
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dropdown-list li:hover {
+  background: #f0f0f0;
+}
+
+.subjects-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.subjects-table th,
+.subjects-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.subjects-table th {
+  background: #f0f0f0;
+}

@@ -1,0 +1,154 @@
+.admins-container {
+  padding: 20px;
+}
+
+.admins-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Кнопка открытия формы */
+.toggle-form-btn {
+  padding: 10px 15px;
+  background: #009367;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: 0.3s;
+}
+
+.toggle-form-btn:hover {
+  background: #007a55;
+  transform: translateY(-2px);
+}
+
+.admin-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 30rem;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+.admin-form input,
+.admin-form select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+}
+
+.admin-form input:focus,
+.admin-form select:focus {
+  border-color: #009367;
+}
+
+/* Кнопки в форме */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.form-actions button {
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.form-actions button[type="submit"] {
+  background: #009367;
+  color: #fff;
+}
+
+.form-actions button[type="submit"]:hover {
+  background: #007a55;
+}
+
+.form-actions button[type="button"] {
+  background: #ddd;
+}
+
+.form-actions button[type="button"]:hover {
+  background: #bbb;
+}
+
+/* Фильтр */
+.filter-block {
+  margin: 20px 0;
+}
+
+.filter-block select {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+}
+
+/* Таблица */
+.admins-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0,0,0,0.08);
+}
+
+.admins-table th,
+.admins-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.admins-table th {
+  background: #f4f4f4;
+  font-weight: 600;
+  color: #333;
+}
+
+.admins-table tr:hover {
+  background: #f9f9f9;
+}
+
+/* Кнопки действий */
+.edit-btn,
+.delete-btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.edit-btn {
+  background: #009367;
+  color: #fff;
+  margin-right: 8px;
+}
+
+.edit-btn:hover {
+  background: #007a55;
+}
+
+.delete-btn {
+  background: #ff4d4f;
+  color: #fff;
+}
+
+.delete-btn:hover {
+  background: #d9363e;
+}
