@@ -95,6 +95,12 @@ i18n.use(initReactI18next).init({
         actions: 'Amallar',
         download: 'Yuklab olish',
 
+        author: 'Muallif',
+        publisher: 'Nashriyot',
+        printed_count: 'Bosma etilgan soni',
+        attach_file: 'Fayl biriktirish',
+        literatures: 'Adabiyotlar',
+
         directions_name: 'Yo‘nalish nomi',
         course: 'Kurs',
         students_count: 'Talabalar soni',
@@ -192,6 +198,12 @@ i18n.use(initReactI18next).init({
         actions: 'Действия',
         download: 'Скачать',
 
+        author: 'Автор',
+        publisher: 'Издательство',
+        printed_count: 'Количество напечатанных',
+        attach_file: 'Прикрепить файл',
+        literatures: 'Литература',
+
         name: 'Название',
         directions_name: 'Название направления',
         course: 'Курс',
@@ -288,6 +300,12 @@ i18n.use(initReactI18next).init({
         file: 'File',
         actions: 'Actions',
         download: 'Download',
+
+        author: 'Author',
+        publisher: 'Publisher',
+        printed_count: 'Printed count',
+        attach_file: 'Attach file',
+        literatures: 'Literatures',
 
         name: 'Name',
         directions_name: 'Direction name',
