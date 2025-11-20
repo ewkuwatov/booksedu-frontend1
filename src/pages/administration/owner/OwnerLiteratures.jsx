@@ -13,6 +13,8 @@ import {
 } from '../../../features/admins/literatureSlice'
 
 import { selectDirection, selectSubject, selectUniver } from '../../../store'
+import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
+
 import { fetchAllGetSubjectsThunk } from '../../../features/admins/subjectSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import { useTranslation } from 'react-i18next'
@@ -31,7 +33,7 @@ const emptyForm = {
   kind: '',
   author: '',
   publisher: '',
-  language: "Til",
+  language: 'Til',
   font_type: 'Yozuv turi',
   year: new Date().getFullYear(),
   printed_count: '',
@@ -64,6 +66,7 @@ export default function OwnerLiteratures() {
 
   useEffect(() => {
     dispatch(fetchAllUniverThunk()).unwrap()
+    dispatch(fetchAllDirectionThunk()).unwrap()
     dispatch(fetchAllGetSubjectsThunk()).unwrap()
     dispatch(fetchAllLiteraturesThunk()).unwrap()
   }, [dispatch])
