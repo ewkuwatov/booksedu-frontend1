@@ -12,7 +12,7 @@ import {
   downloadLiteratureFileThunk,
 } from '../../../features/admins/literatureSlice'
 
-import { selectSubject, selectUniver } from '../../../store'
+import { selectDirection, selectSubject, selectUniver } from '../../../store'
 import { fetchAllGetSubjectsThunk } from '../../../features/admins/subjectSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import { useTranslation } from 'react-i18next'
@@ -50,6 +50,7 @@ const emptyForm = {
 export default function OwnerLiteratures() {
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const { items: directions } = useSelector(selectDirection)
   const { items: literatures, loading, error } = useSelector(selectLiterature)
   const { items: subjects } = useSelector(selectSubject)
   const { items: univers } = useSelector(selectUniver)
@@ -383,6 +384,7 @@ export default function OwnerLiteratures() {
             <th>{t('year')}</th>
             <th>{t('university')}</th>
             <th>{t('subject')}</th>
+            <th>{t('course')}</th>
             <th>{t('file')}</th>
             <th>{t('action')}</th>
           </tr>
@@ -399,6 +401,23 @@ export default function OwnerLiteratures() {
               <td>{l.year}</td>
               <td>{getName(univers, l.university_id)}</td>
               <td>{getName(subjects, l.subject_id)}</td>
+              <td>
+                {(() => {
+                  const sub = subjects.find((s) => s.id === l.subject_id)
+                  if (!sub) return '-'
+
+                  const dirs = sub.direction_ids || []
+                  const courses = dirs
+                    .map((id) => directions.find((d) => d.id === id))
+                    .filter(Boolean)
+                    .map((d) => d.course)
+
+                  return courses.length
+                    ? courses.map((c) => `${c} ${t('course')}`).join(', ')
+                    : '-'
+                })()}
+              </td>
+
               <td>{l.file_path ? '✓' : '-'}</td>
               <td style={{ display: 'flex', gap: 6 }}>
                 <button onClick={() => startEdit(l)}>{t('edit')}</button>
