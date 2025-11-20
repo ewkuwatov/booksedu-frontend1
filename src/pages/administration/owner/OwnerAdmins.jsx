@@ -10,8 +10,10 @@ import {
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import Input from '../../../components/UI/Input'
 import Button from '../../../components/UI/Button'
+import { useTranslation } from 'react-i18next'
 
 const OwnerAdmins = () => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const { items: admins } = useSelector(selectAdmin)
   const { items: univers } = useSelector(selectUniver)
@@ -68,10 +70,8 @@ const OwnerAdmins = () => {
 
   return (
     <div className="admins-container">
-      <h1 className="admins-title">All Admins</h1>
-
       <button className="toggle-form-btn" onClick={() => setOpenForm(true)}>
-        Add admin
+        {t('add')}
       </button>
 
       {openForm && (
@@ -103,7 +103,7 @@ const OwnerAdmins = () => {
                 setForm({ ...form, university_id: e.target.value || null })
               }
             >
-              <option value="">Без привязки</option>
+              <option value="">{t('unattached')}</option>
               {univers.map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.name}
@@ -112,15 +112,15 @@ const OwnerAdmins = () => {
             </select>
 
             <div className="form-actions">
-              <Button type="submit">{editingId ? 'Save' : 'Add'}</Button>
+              <Button type="submit">{editingId ? t('save') : t('add')}</Button>
               <Button
                 type="reset"
                 onClick={() => {
                   resetForm()
-                  setOpenForm()
+                  setOpenForm(false)
                 }}
               >
-                back
+                {t('back')}
               </Button>
             </div>
           </form>
@@ -131,30 +131,30 @@ const OwnerAdmins = () => {
         <thead>
           <tr>
             <th>#</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>University</th>
-            <th>Action</th>
+            <th>{t('email')}</th>
+            <th>{t('role')}</th>
+            <th>{t('universities')}</th>
+            <th>{t('action')}</th>
           </tr>
         </thead>
         <tbody>
-          {admins.map((a) => (
+          {admins.map((a, index) => (
             <tr key={a.id}>
-              <td>{a.id}</td>
+              <td>{index + 1}</td>
               <td>{a.email}</td>
               <td>{a.role}</td>
               <td>
                 {univers.find((u) => u.id === a.university_id)?.name || '-'}
               </td>
               <td>
+                <button className="edit-btn" onClick={() => startEditing(a)}>
+                  {t('edit')}
+                </button>
                 <button
                   className="delete-btn"
                   onClick={() => handleDeleteAdmin(a.id)}
                 >
-                  delete
-                </button>
-                <button className="edit-btn" onClick={() => startEditing(a)}>
-                  edit
+                  {t('delete')}
                 </button>
               </td>
             </tr>

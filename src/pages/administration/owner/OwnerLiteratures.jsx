@@ -15,6 +15,7 @@ import {
 import { selectSubject, selectUniver } from '../../../store'
 import { fetchAllGetSubjectsThunk } from '../../../features/admins/subjectSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
+import { useTranslation } from 'react-i18next'
 
 // enums (должны совпадать со значениями в бэке)
 const LANGUAGE_OPTIONS = ['uzbek', 'russian', 'karakalpak', 'english']
@@ -44,6 +45,7 @@ const emptyForm = {
 }
 
 export default function OwnerLiteratures() {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const { items: literatures, loading, error } = useSelector(selectLiterature)
   const { items: subjects } = useSelector(selectSubject)
@@ -175,7 +177,7 @@ export default function OwnerLiteratures() {
           value={filterUniver}
           onChange={(e) => setFilterUniver(e.target.value)}
         >
-          <option value="">All Universities</option>
+          <option value="">{t('all_univers')}</option>
           {univers.map((u) => (
             <option key={u.id} value={u.id}>
               {u.name}
@@ -187,7 +189,7 @@ export default function OwnerLiteratures() {
           value={filterSubject}
           onChange={(e) => setFilterSubject(e.target.value)}
         >
-          <option value="">All Subjects</option>
+          <option value="">{t('all_subjects')}</option>
           {subjects.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -195,17 +197,12 @@ export default function OwnerLiteratures() {
           ))}
         </select>
 
-        <button onClick={startAdd}>Add Literature</button>
+        <button onClick={startAdd}>{t('add')}</button>
       </div>
 
       {openForm && (
-        <form
-          onSubmit={onSubmit}
-          style={{ display: 'grid', gap: 8, maxWidth: 900, marginBottom: 16 }}
-        >
-          <div
-            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}
-          >
+        <div className="modal-overlay">
+          <form onSubmit={onSubmit} className="directions-form">
             <input
               placeholder="Title"
               value={form.title}
@@ -309,7 +306,10 @@ export default function OwnerLiteratures() {
             <select
               value={form.subject_id ?? ''}
               onChange={(e) =>
-                setForm({ ...form, subject_id: Number(e.target.value) || null })
+                setForm({
+                  ...form,
+                  subject_id: Number(e.target.value) || null,
+                })
               }
             >
               <option value="">Subject</option>
@@ -325,64 +325,66 @@ export default function OwnerLiteratures() {
                   </option>
                 ))}
             </select>
-          </div>
 
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={useFileMode}
+                  onChange={(e) => setUseFileMode(e.target.checked)}
+                />{' '}
+                Attach file
+              </label>
+
               <input
-                type="checkbox"
-                checked={useFileMode}
-                onChange={(e) => setUseFileMode(e.target.checked)}
-              />{' '}
-              Attach file
-            </label>
+                type="file"
+                disabled={!useFileMode}
+                onChange={(e) =>
+                  setForm({ ...form, file: e.target.files?.[0] || null })
+                }
+              />
+            </div>
 
-            <input
-              type="file"
-              disabled={!useFileMode}
-              onChange={(e) =>
-                setForm({ ...form, file: e.target.files?.[0] || null })
-              }
-            />
-          </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button type="submit">{editingId ? t('save') : t('add')}</button>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpenForm(false)
+                  setEditingId(null)
+                  setForm(emptyForm)
+                }}
+              >
+                {t('cancel')}
+              </button>
+            </div>
 
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button type="submit">{editingId ? 'Save' : 'Create'}</button>
-            <button
-              type="button"
-              onClick={() => {
-                setOpenForm(false)
-                setEditingId(null)
-                setForm(emptyForm)
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-
-          {error ? (
-            <div style={{ color: 'crimson' }}>{String(error)}</div>
-          ) : null}
-        </form>
+            {error ? (
+              <div style={{ color: 'crimson' }}>{String(error)}</div>
+            ) : null}
+          </form>
+        </div>
       )}
 
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th style={{ textAlign: 'left' }}>Title</th>
-            <th>Kind</th>
-            <th>Language</th>
-            <th>Font</th>
-            <th>Year</th>
-            <th>University</th>
-            <th>Subject</th>
-            <th>File</th>
-            <th style={{ width: 200 }}>Actions</th>
+            <th>#</th>
+            <th>{t('title')}</th>
+            <th>{t('kind')}</th>
+            <th>{t('language')}</th>
+            <th>{t('font')}</th>
+            <th>{t('year')}</th>
+            <th>{t('university')}</th>
+            <th>{t('subject')}</th>
+            <th>{t('file')}</th>
+            <th>{t('actions')}</th>
           </tr>
         </thead>
         <tbody>
-          {filtered.map((l) => (
+          {filtered.map((l, index) => (
             <tr key={l.id}>
+              <td>{index + 1}</td>
               <td>{l.title}</td>
               <td>{l.kind}</td>
               <td>{l.language}</td>
@@ -392,13 +394,13 @@ export default function OwnerLiteratures() {
               <td>{getName(subjects, l.subject_id)}</td>
               <td>{l.file_path ? '✓' : '-'}</td>
               <td style={{ display: 'flex', gap: 6 }}>
-                <button onClick={() => startEdit(l)}>Edit</button>
-                <button onClick={() => onDelete(l.id)}>Del</button>
+                <button onClick={() => startEdit(l)}>{t('edit')}</button>
+                <button onClick={() => onDelete(l.id)}>{t('delete')}</button>
                 <button
                   disabled={!l.file_path}
                   onClick={() => onDownload(l.id)}
                 >
-                  Download
+                  {t('download')}
                 </button>
               </td>
             </tr>
