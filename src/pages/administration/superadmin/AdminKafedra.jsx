@@ -85,16 +85,28 @@ const AdminKafedra = () => {
         </form>
       )}
 
-      <ul>
-        {filtered.map((k, index) => (
-          <li key={k.id}>
-            <p>{index + 1}</p>
-            {k.name}
+      <table className="kafedra-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>{t('kafedras')}</th>
+            <th>{t('action')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map((k, index) => (
+            <tr key={k.id}>
+              <td>{index + 1}</td>
+              <td>{k.name}</td>
+              <td>
+                <Button onClick={() => startEditing(k)}>{t('edit')}</Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-            <Button onClick={() => startEditing(k)}>{t('edit')}</Button>
-          </li>
-        ))}
-      </ul>
+      <ul></ul>
     </div>
   )
 }
