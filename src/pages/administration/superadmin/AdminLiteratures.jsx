@@ -11,6 +11,8 @@ import {
   downloadLiteratureFileThunk,
 } from '../../../features/admins/literatureSlice'
 
+import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
+
 import { fetchAllGetSubjectsThunk } from '../../../features/admins/subjectSlice'
 
 import { selectAuth, selectDirection, selectSubject } from '../../../store'
@@ -61,6 +63,7 @@ export default function AdminLiteratures() {
 
   useEffect(() => {
     dispatch(fetchAllLiteraturesThunk()).unwrap()
+    dispatch(fetchAllDirectionThunk()).unwrap()
     dispatch(fetchAllGetSubjectsThunk()).unwrap()
   }, [dispatch])
 
