@@ -22,25 +22,31 @@ import {
   UsageStatusEnum,
 } from '../../../utils/unums'
 
+import { useTranslation } from 'react-i18next'
+
 const emptyForm = {
   title: '',
   kind: '',
   author: '',
   publisher: '',
-  language: 'uzbek',
-  font_type: 'latin',
+  language: 'Til',
+  font_type: 'Yozuv turi',
   year: new Date().getFullYear(),
   printed_count: '',
-  condition: 'actual',
-  usage_status: 'use',
+  condition: 'Zamon talabiga mos',
+  usage_status: 'Fan dasturida foydalaniladi',
   image: '',
   file_path: '',
+
   subject_id: null,
   university_id: null,
+
+  // для multipart
   file: null,
 }
 
 export default function AdminLiteratures() {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
 
   const { user } = useSelector(selectAuth)
@@ -52,19 +58,16 @@ export default function AdminLiteratures() {
   const [form, setForm] = useState(emptyForm)
   const [useFileMode, setUseFileMode] = useState(false)
 
-  // !!! ВАЖНО — загружаем предметы !!!
   useEffect(() => {
     dispatch(fetchAllLiteraturesThunk()).unwrap()
     dispatch(fetchAllGetSubjectsThunk()).unwrap()
   }, [dispatch])
 
-  // фильтрация литературы по университету админа
   const filtered = useMemo(
     () => literatures.filter((l) => l.university_id === user.university_id),
     [literatures, user]
   )
 
-  // старт добавления
   const startAdd = () => {
     setEditingId(null)
     setForm({
@@ -135,9 +138,11 @@ export default function AdminLiteratures() {
 
   return (
     <div style={{ padding: 16 }}>
-      <h1>Literatures — {user.university_name}</h1>
+      <h1>
+        {t('literatures')} — {user.university_name}
+      </h1>
 
-      <button onClick={startAdd}>Add Literature</button>
+      <button onClick={startAdd}>{t('add')}</button>
 
       {openForm && (
         <form
@@ -150,39 +155,39 @@ export default function AdminLiteratures() {
           }}
         >
           <input
-            placeholder="Title"
+            placeholder={t('title')}
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
 
           <input
-            placeholder="Kind"
+            placeholder={t('kind')}
             value={form.kind}
             onChange={(e) => setForm({ ...form, kind: e.target.value })}
           />
 
           <input
-            placeholder="Author"
+            placeholder={t('author')}
             value={form.author}
             onChange={(e) => setForm({ ...form, author: e.target.value })}
           />
 
           <input
-            placeholder="Publisher"
+            placeholder={t('publisher')}
             value={form.publisher}
             onChange={(e) => setForm({ ...form, publisher: e.target.value })}
           />
 
           <input
             type="number"
-            placeholder="Year"
+            placeholder={t('year')}
             value={form.year}
             onChange={(e) => setForm({ ...form, year: e.target.value })}
           />
 
           <input
             type="number"
-            placeholder="Printed count"
+            placeholder={t('printed_count')}
             value={form.printed_count}
             onChange={(e) =>
               setForm({ ...form, printed_count: e.target.value })
@@ -193,6 +198,7 @@ export default function AdminLiteratures() {
             value={form.language}
             onChange={(e) => setForm({ ...form, language: e.target.value })}
           >
+            <option value="">{t('language')}</option>
             {Object.values(LanguageEnum).map((v) => (
               <option key={v} value={v}>
                 {v}
@@ -204,6 +210,7 @@ export default function AdminLiteratures() {
             value={form.font_type}
             onChange={(e) => setForm({ ...form, font_type: e.target.value })}
           >
+            <option value="">{t('font')}</option>
             {Object.values(FontTypeEnum).map((v) => (
               <option key={v} value={v}>
                 {v}
@@ -233,14 +240,13 @@ export default function AdminLiteratures() {
             ))}
           </select>
 
-          {/* SUBJECT */}
           <select
             value={form.subject_id ?? ''}
             onChange={(e) =>
               setForm({ ...form, subject_id: Number(e.target.value) || null })
             }
           >
-            <option value="">Select subject</option>
+            <option value="">{t('subjects')}</option>
 
             {subjects
               .filter((s) => s.university_id === user.university_id)
@@ -252,7 +258,7 @@ export default function AdminLiteratures() {
           </select>
 
           <div style={{ display: 'flex', gap: 8 }}>
-            <button type="submit">{editingId ? 'Save' : 'Create'}</button>
+            <button type="submit">{editingId ? t('save') : t('add')}</button>
             <button
               type="button"
               onClick={() => {
@@ -261,7 +267,7 @@ export default function AdminLiteratures() {
                 setForm(emptyForm)
               }}
             >
-              Cancel
+              {t('cancel')}
             </button>
           </div>
         </form>
@@ -270,31 +276,33 @@ export default function AdminLiteratures() {
       <table style={{ marginTop: 20 }}>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Kind</th>
-            <th>Subject</th>
-            <th>File</th>
-            <th></th>
+            <th>{t('title')}</th>
+            <th>{t('kind')}</th>
+            <th>{t('subject')}</th>
+            <th>{t('file')}</th>
+            <th>{t('action')}</th>
           </tr>
         </thead>
 
         <tbody>
-          {filtered.map((l) => (
+          {filtered.map((l, index) => (
             <tr key={l.id}>
+              <td>{index + 1}</td>
               <td>{l.title}</td>
               <td>{l.kind}</td>
               <td>
                 {subjects.find((s) => s.id === l.subject_id)?.name || '-'}
               </td>
               <td>{l.file_path ? '📄' : '-'}</td>
+
               <td>
-                <button onClick={() => startEdit(l)}>Edit</button>
-                <button onClick={() => onDelete(l.id)}>Del</button>
+                <button onClick={() => startEdit(l)}>{t('edit')}</button>
+                <button onClick={() => onDelete(l.id)}>{t('delete')}</button>
                 <button
                   disabled={!l.file_path}
                   onClick={() => onDownload(l.id)}
                 >
-                  Download
+                  {t('download')}
                 </button>
               </td>
             </tr>

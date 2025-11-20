@@ -65,7 +65,7 @@ const OwnerDirections = () => {
         }}
         className="toggle-form-btn"
       >
-        Add Direction
+        {t('add')}
       </Button>
 
       {/* ФИЛЬТР */}

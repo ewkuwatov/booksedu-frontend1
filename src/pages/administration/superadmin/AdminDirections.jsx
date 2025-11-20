@@ -4,15 +4,16 @@ import { useEffect, useState } from 'react'
 import {
   fetchAddDirectionThunk,
   fetchAllDirectionThunk,
-  fetchDeleteDirectionThunk,
   fetchUpdateDirectionThunk,
 } from '../../../features/admins/directionSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import Input from '../../../components/UI/Input'
 import { useCrud } from '../../../hooks/useCrud'
 import Button from '../../../components/UI/Button'
+import { useTranslation } from 'react-i18next'
 
 const AdminDirections = () => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const { items: directions } = useSelector(selectDirection)
   const { items: univers } = useSelector(selectUniver)
@@ -27,7 +28,6 @@ const AdminDirections = () => {
     editingId,
     startEditing,
     handleSubmit,
-    handleDelete,
     resetForm,
   } = useCrud({
     initialForm: {
@@ -41,7 +41,6 @@ const AdminDirections = () => {
     add: (data) => dispatch(fetchAddDirectionThunk(data)).unwrap(),
     update: (id, data) =>
       dispatch(fetchUpdateDirectionThunk({ id, updated: data })).unwrap(),
-    remove: (id) => dispatch(fetchDeleteDirectionThunk(id)).unwrap(),
   })
 
   useEffect(() => {
@@ -59,14 +58,13 @@ const AdminDirections = () => {
 
   return (
     <div>
-      <h1>Все направления вашего университета</h1>
       <Button
         onClick={() => {
           resetForm()
           setOpenForm(true)
         }}
       >
-        Add Direction
+        {t('add')}
       </Button>
 
       {openForm && (
@@ -75,12 +73,12 @@ const AdminDirections = () => {
             <Input
               value={form.number}
               onChange={(e) => setForm({ ...form, number: e.target.value })}
-              placeholder={'Number'}
+              placeholder={t('cipher')}
             />
             <Input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder={'Name'}
+              placeholder={t('directions_name')}
             />
 
             <select
@@ -89,21 +87,21 @@ const AdminDirections = () => {
                 setForm({ ...form, course: Number(e.target.value) })
               }
             >
-              <option value={1}>1</option>
-              <option value={2}>2</option>
-              <option value={3}>3</option>
-              <option value={4}>4</option>
+              <option value={1}>1 {t('course')}</option>
+              <option value={2}>2 {t('course')}</option>
+              <option value={3}>3 {t('course')}</option>
+              <option value={4}>4 {t('course')}</option>
             </select>
             <Input
               value={form.student_count || ''}
               onChange={(e) =>
                 setForm({ ...form, student_count: Number(e.target.value) })
               }
-              placeholder="Students count"
+              placeholder={t('students_count')}
             />
 
             <div className="form-actions">
-              <Button type="submit">{editingId ? 'Save' : 'Add'}</Button>
+              <Button type="submit">{editingId ? t('save') : t('add')}</Button>
               <Button
                 type="button"
                 onClick={() => {
@@ -111,7 +109,7 @@ const AdminDirections = () => {
                   setOpenForm(false)
                 }}
               >
-                Back
+                {t('back')}
               </Button>
             </div>
           </form>
@@ -123,17 +121,19 @@ const AdminDirections = () => {
       <table className="directions-table">
         <thead>
           <tr>
-            <th>Number</th>
-            <th>Name</th>
-            <th>Course</th>
-            <th>Students</th>
-            <th>University</th>
-            <th>Action</th>
+            <th>#</th>
+            <th>{t('cipher')}</th>
+            <th>{t('directions')}</th>
+            <th>{t('course')}</th>
+            <th>{t('students_count')}</th>
+            <th>{t('university')}</th>
+            <th>{t('action')}</th>
           </tr>
         </thead>
         <tbody>
-          {filtered.map((d) => (
+          {filtered.map((d, index) => (
             <tr key={d.id}>
+              <td>{index + 1}</td>
               <td>{d.number}</td>
               <td>{d.name}</td>
               <td>{d.course}</td>
@@ -142,8 +142,7 @@ const AdminDirections = () => {
                 {univers.find((u) => u.id === d.university_id)?.name || '-'}
               </td>
               <td>
-                <button onClick={() => startEditing(d)}>Edit</button>
-                <button onClick={() => handleDelete(d.id)}>Delete</button>
+                <button onClick={() => startEditing(d)}>{t('edit')}</button>
               </td>
             </tr>
           ))}
