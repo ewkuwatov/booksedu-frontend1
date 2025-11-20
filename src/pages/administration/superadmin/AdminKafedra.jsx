@@ -4,14 +4,15 @@ import { useCrud } from '../../../hooks/useCrud'
 import {
   fetchAddKafedrasThunk,
   fetchAllKafedrasThunk,
-  fetchDeleteKafedrasThunk,
   fetchUpdateKafedrasThunk,
 } from '../../../features/admins/kafedraSlice'
 import { useEffect, useState } from 'react'
 import Button from '../../../components/UI/Button'
 import Input from '../../../components/UI/Input'
+import { useTranslation } from 'react-i18next'
 
 const AdminKafedra = () => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const { items: kafedras } = useSelector(selectKafedra)
   const { user } = useSelector(selectAuth)
@@ -25,8 +26,7 @@ const AdminKafedra = () => {
     editingId,
     startEditing,
     handleSubmit,
-    handleDelete,
-    resetForm, 
+    resetForm,
   } = useCrud({
     initialForm: {
       name: '',
@@ -36,7 +36,6 @@ const AdminKafedra = () => {
     add: (data) => dispatch(fetchAddKafedrasThunk(data)).unwrap(),
     update: (id, data) =>
       dispatch(fetchUpdateKafedrasThunk({ id, updated: data })).unwrap(),
-    remove: (id) => dispatch(fetchDeleteKafedrasThunk(id)).unwrap(),
   })
 
   useEffect(() => {
@@ -53,31 +52,46 @@ const AdminKafedra = () => {
 
   return (
     <div>
-      <h1>Кафедры</h1>
+      <h1>{t('kafedras')}</h1>
+
       <Button
         onClick={() => {
           resetForm()
           setOpenForm(true)
         }}
       >
-        Add Kafedra
+        {t('add')}
       </Button>
 
       {openForm && (
         <form onSubmit={handleSubmit}>
           <Input
             value={form.name}
+            placeholder={t('kafedra_name')}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
-          <Button type={'submit'}>{editingId ? 'Save' : 'Add'}</Button>
+
+          <Button type={'submit'}>{editingId ? t('save') : t('add')}</Button>
+
+          <Button
+            type="button"
+            onClick={() => {
+              resetForm()
+              setOpenForm(false)
+            }}
+          >
+            {t('back')}
+          </Button>
         </form>
       )}
+
       <ul>
-        {filtered.map((k) => (
+        {filtered.map((k, index) => (
           <li key={k.id}>
+            <p>{index + 1}</p>
             {k.name}
-            <Button onClick={() => startEditing(k)}>Edit</Button>
-            <Button onClick={() => handleDelete(k.id)}>Delete</Button>
+
+            <Button onClick={() => startEditing(k)}>{t('edit')}</Button>
           </li>
         ))}
       </ul>

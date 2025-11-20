@@ -16,8 +16,10 @@ import {
 
 import { fetchAllKafedrasThunk } from '../../../features/admins/kafedraSlice'
 import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
+import { useTranslation } from 'react-i18next'
 
 const AdminSubjects = () => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
 
   const { user } = useSelector(selectAuth)
@@ -27,11 +29,10 @@ const AdminSubjects = () => {
 
   const [openForm, setOpenForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
-  const [editData, setEditData] = useState(null) 
+  const [editData, setEditData] = useState(null)
 
   const univerId = user?.university_id ?? null
 
-  // Форма добавления
   const [subjectsForm, setSubjectsForm] = useState([
     {
       name: '',
@@ -42,7 +43,6 @@ const AdminSubjects = () => {
     },
   ])
 
-  // загрузка данных
   useEffect(() => {
     if (univerId) {
       dispatch(fetchAllKafedrasThunk()).unwrap()
@@ -51,7 +51,6 @@ const AdminSubjects = () => {
     }
   }, [dispatch, univerId])
 
-  // проверка дублей
   const checkDuplicate = (name, kafedra_id) => {
     return subjects.some(
       (s) =>
@@ -61,7 +60,6 @@ const AdminSubjects = () => {
     )
   }
 
-  // обновление полей формы
   const updateField = (index, field, value) => {
     setSubjectsForm((prev) =>
       prev.map((item, i) =>
@@ -82,7 +80,6 @@ const AdminSubjects = () => {
     )
   }
 
-  // выбор направлений
   const toggleDirection = (index, id) => {
     setSubjectsForm((prev) =>
       prev.map((item, i) =>
@@ -98,7 +95,6 @@ const AdminSubjects = () => {
     )
   }
 
-  // добавить строку
   const addFormRow = () => {
     setSubjectsForm((prev) => [
       ...prev,
@@ -112,11 +108,10 @@ const AdminSubjects = () => {
     ])
   }
 
-  // сохранить добавление
   const handleSubmit = async (e) => {
     e.preventDefault()
     const valid = subjectsForm.filter((s) => s.name && s.kafedra_id && !s.error)
-    if (!valid.length) return alert('Исправьте ошибки в форме ✅')
+    if (!valid.length) return alert(t('fix_errors'))
 
     await dispatch(fetchAddSubjectsThunkBulk(valid)).unwrap()
     await dispatch(fetchAllGetSubjectsThunk()).unwrap()
@@ -133,12 +128,10 @@ const AdminSubjects = () => {
     setOpenForm(false)
   }
 
-  // удалить
   const handleDelete = async (id) => {
     await dispatch(fetchDeleteSubjectsThunk(id)).unwrap()
   }
 
-  // начать редактирование
   const startEditing = (subject) => {
     setEditingId(subject.id)
     setEditData({
@@ -148,7 +141,6 @@ const AdminSubjects = () => {
     })
   }
 
-  // обновить поле при редактировании
   const handleEditChange = (field, value) => {
     setEditData((prev) => ({
       ...prev,
@@ -156,7 +148,6 @@ const AdminSubjects = () => {
     }))
   }
 
-  // переключить направление при редактировании
   const toggleEditDirection = (id) => {
     setEditData((prev) => ({
       ...prev,
@@ -166,7 +157,6 @@ const AdminSubjects = () => {
     }))
   }
 
-  // сохранить редактирование
   const handleSaveEdit = async (id) => {
     await dispatch(
       fetchUpdateSubjectsThunk({
@@ -187,20 +177,21 @@ const AdminSubjects = () => {
 
   return (
     <div className="subjects-admin">
-      <h1>📚 Subjects — Университет ID: {univerId}</h1>
+      <h1>
+        📚 {t('subjects')} — {t('university')} ID: {univerId}
+      </h1>
 
       <button className="primary-btn" onClick={() => setOpenForm(true)}>
-        ➕ Add Subjects
+        ➕ {t('add')}
       </button>
 
-      {/* ---------- Добавление ---------- */}
       {openForm && (
         <div className="modal-overlay">
           <form onSubmit={handleSubmit} className="subjects-form">
             {subjectsForm.map((subj, index) => (
               <div key={index} className="subject-item">
                 <input
-                  placeholder="Название предмета"
+                  placeholder={t('name')}
                   value={subj.name}
                   onChange={(e) => updateField(index, 'name', e.target.value)}
                   className="subject-input"
@@ -213,7 +204,7 @@ const AdminSubjects = () => {
                   }
                   className="subject-select"
                 >
-                  <option value="">Кафедра</option>
+                  <option value="">{t('kafedra')}</option>
                   {availableKafedras.map((k) => (
                     <option key={k.id} value={k.id}>
                       {k.name}
@@ -223,12 +214,12 @@ const AdminSubjects = () => {
 
                 {subj.error && (
                   <p style={{ color: 'red', fontSize: 12 }}>
-                    ❗ Такой предмет уже существует в этой кафедре
+                    ❗ {t('duplicate_subject')}
                   </p>
                 )}
 
                 <div className="direction-checkboxes">
-                  <strong className="directionBtn">Направления:</strong>
+                  <strong className="directionBtn">{t('directions')}</strong>
                   {availableDirections.map((d) => (
                     <label key={d.id} style={{ display: 'block' }}>
                       <input
@@ -236,7 +227,7 @@ const AdminSubjects = () => {
                         checked={subj.direction_ids.includes(d.id)}
                         onChange={() => toggleDirection(index, d.id)}
                       />
-                      {d.name} ({d.course} курс)
+                      {d.name} ({d.course} {t('course')})
                     </label>
                   ))}
                 </div>
@@ -244,31 +235,33 @@ const AdminSubjects = () => {
             ))}
 
             <button type="button" onClick={addFormRow}>
-              ➕ Добавить ещё
+              ➕ {t('add_more')}
             </button>
-            <button type="submit">✅ Сохранить</button>
+            <button type="submit">✅ {t('save')}</button>
             <button type="button" onClick={() => setOpenForm(false)}>
-              ✖ Отмена
+              ✖ {t('cancel')}
             </button>
           </form>
         </div>
       )}
 
-      {/* ---------- Таблица ---------- */}
       <table style={{ marginTop: 20 }}>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Kafedra</th>
-            <th>Directions</th>
-            <th></th>
+            <th>#</th>
+            <th>{t('name')}</th>
+            <th>{t('kafedra')}</th>
+            <th>{t('directions')}</th>
+            <th>{t('action')}</th>
           </tr>
         </thead>
         <tbody>
           {subjects
             .filter((s) => s.university_id === univerId)
-            .map((s) => (
+            .map((s, index) => (
               <tr key={s.id}>
+                <td>{index + 1}</td>
+
                 <td>
                   {editingId === s.id ? (
                     <input
@@ -288,7 +281,7 @@ const AdminSubjects = () => {
                         handleEditChange('kafedra_id', Number(e.target.value))
                       }
                     >
-                      <option value="">Кафедра</option>
+                      <option value="">{t('kafedra')}</option>
                       {availableKafedras.map((k) => (
                         <option key={k.id} value={k.id}>
                           {k.name}
@@ -311,7 +304,7 @@ const AdminSubjects = () => {
                             checked={editData.direction_ids.includes(d.id)}
                             onChange={() => toggleEditDirection(d.id)}
                           />
-                          {d.name} ({d.course}-курс)
+                          {d.name} ({d.course} {t('course')})
                         </label>
                       ))}
                     </div>
@@ -319,7 +312,9 @@ const AdminSubjects = () => {
                     (s.direction_ids ?? [])
                       .map((id) => {
                         const d = availableDirections.find((x) => x.id === id)
-                        return d ? `${d.name} (${d.course}-курс)` : null
+                        return d
+                          ? `${d.name} (${d.course} ${t('course')})`
+                          : null
                       })
                       .filter(Boolean)
                       .join(', ') || '-'
@@ -330,7 +325,7 @@ const AdminSubjects = () => {
                   {editingId === s.id ? (
                     <>
                       <button onClick={() => handleSaveEdit(s.id)}>
-                        💾 Save
+                        💾 {t('save')}
                       </button>
                       <button
                         onClick={() => {
@@ -338,13 +333,17 @@ const AdminSubjects = () => {
                           setEditData(null)
                         }}
                       >
-                        ❌ Cancel
+                        ❌ {t('cancel')}
                       </button>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => startEditing(s)}>✏️ Edit</button>
-                      <button onClick={() => handleDelete(s.id)}>🗑 Del</button>
+                      <button onClick={() => startEditing(s)}>
+                        ✏️ {t('edit')}
+                      </button>
+                      <button onClick={() => handleDelete(s.id)}>
+                        🗑 {t('delete')}
+                      </button>
                     </>
                   )}
                 </td>
