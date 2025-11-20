@@ -276,6 +276,7 @@ export default function AdminLiteratures() {
       <table style={{ marginTop: 20 }}>
         <thead>
           <tr>
+            <th>#</th>
             <th>{t('title')}</th>
             <th>{t('kind')}</th>
             <th>{t('subject')}</th>
