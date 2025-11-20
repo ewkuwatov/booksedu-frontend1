@@ -11,6 +11,7 @@ import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import Input from '../../../components/UI/Input'
 import Button from '../../../components/UI/Button'
 import { useTranslation } from 'react-i18next'
+import { usePagination } from '../../../hooks/usePagination'
 
 const OwnerAdmins = () => {
   const { t } = useTranslation()
@@ -31,6 +32,11 @@ const OwnerAdmins = () => {
     dispatch(fetchAllAdminsThunk())
     dispatch(fetchAllUniverThunk())
   }, [dispatch])
+
+  const { page, maxPage, currentData, next, prev, goTo } = usePagination(
+    admins,
+    10
+  )
 
   const resetForm = () => {
     setForm({
@@ -138,7 +144,7 @@ const OwnerAdmins = () => {
           </tr>
         </thead>
         <tbody>
-          {admins.map((a, index) => (
+          {currentData.map((a, index) => (
             <tr key={a.id}>
               <td>{index + 1}</td>
               <td>{a.email}</td>
@@ -161,6 +167,25 @@ const OwnerAdmins = () => {
           ))}
         </tbody>
       </table>
+      <div className="pagination">
+        <button onClick={prev} disabled={page === 1}>
+          ←
+        </button>
+
+        {[...Array(maxPage)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i + 1)}
+            className={page === i + 1 ? 'active' : ''}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button onClick={next} disabled={page === maxPage}>
+          →
+        </button>
+      </div>
     </div>
   )
 }
