@@ -17,8 +17,10 @@ import {
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import { fetchAllKafedrasThunk } from '../../../features/admins/kafedraSlice'
 import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
+import { useTranslation } from 'react-i18next'
 
 const OwnerSubjects = () => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
 
   const { items: subjects } = useSelector(selectSubject)
@@ -145,7 +147,7 @@ const OwnerSubjects = () => {
     <div className="subjects-admin">
       <h1>📚 Subjects</h1>
       <button className="primary-btn" onClick={() => setOpenForm(true)}>
-        ➕ Add Subjects
+        {t('add')}
       </button>
       {openForm && (
         <div className="modal-overlay">
@@ -161,7 +163,7 @@ const OwnerSubjects = () => {
               return (
                 <div key={index} className="subject-item">
                   <input
-                    placeholder="Название"
+                    placeholder={t('name')}
                     value={subj.name}
                     onChange={(e) => updateField(index, 'name', e.target.value)}
                     className="subject-input"
@@ -178,7 +180,7 @@ const OwnerSubjects = () => {
                     }
                     className="subject-select"
                   >
-                    <option value="">Университет</option>
+                    <option value="">{t('university')}</option>
                     {univers.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.name}
@@ -194,7 +196,7 @@ const OwnerSubjects = () => {
                     }
                     className="subject-select"
                   >
-                    <option value="">Кафедра</option>
+                    <option value="">{t('kafedra')}</option>
                     {availableKafedras.map((k) => (
                       <option key={k.id} value={k.id}>
                         {k.name}
@@ -227,16 +229,16 @@ const OwnerSubjects = () => {
             })}
 
             <button type="button" onClick={addFormRow}>
-              Добавить ещё
+              {t('add_more')}
             </button>
-            <button type="submit">Сохранить</button>
+            <button type="submit">{t('save')}</button>
             <button type="button" onClick={() => setOpenForm(false)}>
-              Отмена
+              {t('cancel')}
             </button>
           </form>
         </div>
       )}
-      
+
       <select
         value={filterUniver}
         onChange={(e) => setFilterUniver(e.target.value)}
@@ -252,16 +254,18 @@ const OwnerSubjects = () => {
       <table style={{ marginTop: 20 }}>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Kafedra</th>
-            <th>University</th>
-            <th>Directions</th>
-            <th></th>
+            <th>#</th>
+            <th>{t('name')}</th>
+            <th>{t('kafedra')}</th>
+            <th>{t('university')}</th>
+            <th>{t('directions')}</th>
+            <th>{t('action')}</th>
           </tr>
         </thead>
         <tbody>
-          {filteredSubjects.map((s) => (
+          {filteredSubjects.map((s, index) => (
             <tr key={s.id}>
+              <td>{index + 1}</td>
               <td>{s.name}</td>
               <td>
                 {kafedras.find((k) => k.id === s.kafedra_id)?.name || '-'}
@@ -280,7 +284,9 @@ const OwnerSubjects = () => {
               </td>
 
               <td>
-                <button onClick={() => handleDelete(s.id)}>🗑 Del</button>
+                <button onClick={() => handleDelete(s.id)}>
+                  {t('delete')}
+                </button>
               </td>
             </tr>
           ))}

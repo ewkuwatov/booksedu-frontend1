@@ -10,8 +10,10 @@ import {
 import { useEffect, useState } from 'react'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import Input from '../../../components/UI/Input'
+import { useTranslation } from 'react-i18next'
 
 const OwnerKafedras = () => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const { items: kafedras } = useSelector(selectKafedra)
   const { items: univers } = useSelector(selectUniver)
@@ -57,7 +59,7 @@ const OwnerKafedras = () => {
         }}
         className="primary-btn"
       >
-        Add Kafedra
+        {t('add')}
       </button>
 
       {openForm && (
@@ -66,7 +68,7 @@ const OwnerKafedras = () => {
             <Input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder={'Name'}
+              placeholder={t('kafedra_name')}
             />
             <select
               value={form.university_id ?? ''}
@@ -77,7 +79,7 @@ const OwnerKafedras = () => {
                 })
               }
             >
-              <option value="">Без привязки</option>
+              <option value="">{t('unattached')}</option>
               {univers.map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.name}
@@ -85,7 +87,7 @@ const OwnerKafedras = () => {
               ))}
             </select>
 
-            <button type={'submit'}>{editingId ? 'Save' : 'Add'}</button>
+            <button type={'submit'}>{editingId ? t('save') : t('add')}</button>
             <button
               type="button"
               onClick={() => {
@@ -93,7 +95,7 @@ const OwnerKafedras = () => {
                 setOpenForm(false)
               }}
             >
-              Back
+              {t('back')}
             </button>
           </form>
         </div>
@@ -103,7 +105,7 @@ const OwnerKafedras = () => {
           value={filterUniver}
           onChange={(e) => setFilterUniver(e.target.value)}
         >
-          <option value="">All Univers</option>
+          <option value="">{t('all_univers')}</option>
           {univers.map((u) => (
             <option key={u.id} value={u.id}>
               {u.name}
@@ -116,28 +118,28 @@ const OwnerKafedras = () => {
         <thead>
           <tr>
             <th>#</th>
-            <th>Name</th>
-            <th>University</th>
-            <th>Action</th>
+            <th>{t('kafedras')}</th>
+            <th>{t('universities')}</th>
+            <th>{t('action')}</th>
           </tr>
         </thead>
         <tbody>
-          {filtered.map((k) => (
+          {filtered.map((k, index) => (
             <tr key={k.id}>
-              <td>#</td>
+              <td>{index + 1}</td>
               <td>{k.name}</td>
               <td>
                 {univers.find((u) => u.id === k.university_id)?.name || '-'}
               </td>
               <td>
                 <button className="edit-btn" onClick={() => startEditing(k)}>
-                  Edit
+                  {t('edit')}
                 </button>
                 <button
                   className="delete-btn"
                   onClick={() => handleDelete(k.id)}
                 >
-                  Delete
+                  {t('delete')}
                 </button>
               </td>
             </tr>

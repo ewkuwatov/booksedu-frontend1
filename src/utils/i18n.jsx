@@ -7,6 +7,9 @@ i18n.use(initReactI18next).init({
   resources: {
     uz: {
       translation: {
+        /* =====================
+           MAIN SITE
+        ====================== */
         universities: 'Universitetlar',
         directions: 'Yo‘nalishlar',
         news: 'Yangiliklar',
@@ -50,14 +53,66 @@ i18n.use(initReactI18next).init({
 
         admin_cabinet: 'Admin kabineti',
         admins: 'Adminlar',
-        kafedras: 'Kafedra',
+        kafedras: 'Kafedralar',
         logout: 'Chiqish',
 
         English: 'Ingliz',
         Russian: 'Rus',
         Uzbek: "O'zbek",
+
+        /* =====================
+           UNIVERSAL BUTTONS
+        ====================== */
+        add: 'Qo‘shish',
+        save: 'Saqlash',
+        edit: 'Tahrirlash',
+        delete: 'O‘chirish',
+        back: 'Orqaga',
+        cancel: 'Bekor qilish',
+
+        /* =====================
+           TABLE / FORM TEXTS
+        ====================== */
+        unattached: 'Biriktirilmagan',
+        all_univers: 'Barcha universitetlar',
+        all_subjects: 'Barcha fanlar',
+
+        kafedra: 'Kafedra',
+        kafedra_name: 'Kafedra nomi',
+        action: 'Amal',
+
+        email: 'Email',
+        role: 'Rol',
+        owner: 'Egalik qiluvchi',
+        superadmin: 'Superadmin',
+
+        title: 'Sarlavha',
+        kind: 'Turi',
+        language: 'Til',
+        font: 'Shrift',
+        year: 'Yil',
+        file: 'Fayl',
+        actions: 'Amallar',
+        download: 'Yuklab olish',
+
+        name: 'Nomi',
+        directions_name: 'Yo‘nalish nomi',
+        course: 'Kurs',
+        students_count: 'Talabalar soni',
+
+        cipher: 'Shifr',
+        subject: 'Fan',
+        add_more: 'Yana qo‘shish',
+        directions: 'Yo‘nalishlar',
+
+        region: 'Hudud',
+        location: 'Joylashuv',
       },
     },
+
+    /* =====================
+          RUSSIAN
+    ====================== */
     ru: {
       translation: {
         universities: 'Университеты',
@@ -101,14 +156,62 @@ i18n.use(initReactI18next).init({
 
         admin_cabinet: 'Админ кабинет',
         admins: 'Админы',
-        kafedras: 'Кафедра',
+        kafedras: 'Кафедры',
         logout: 'Выйти',
 
         English: 'Английский',
         Russian: 'Русский',
         Uzbek: 'Узбекский',
+
+        /* BUTTONS */
+        add: 'Добавить',
+        save: 'Сохранить',
+        edit: 'Редактировать',
+        delete: 'Удалить',
+        back: 'Назад',
+        cancel: 'Отмена',
+
+        /* FORMS / TABLES */
+        unattached: 'Не прикреплено',
+        all_univers: 'Все университеты',
+        all_subjects: 'Все предметы',
+
+        kafedra: 'Кафедра',
+        kafedra_name: 'Название кафедры',
+        action: 'Действия',
+
+        email: 'Email',
+        role: 'Роль',
+        owner: 'Владелец',
+        superadmin: 'Суперадмин',
+
+        title: 'Название',
+        kind: 'Тип',
+        language: 'Язык',
+        font: 'Шрифт',
+        year: 'Год',
+        file: 'Файл',
+        actions: 'Действия',
+        download: 'Скачать',
+
+        name: 'Название',
+        directions_name: 'Название направления',
+        course: 'Курс',
+        students_count: 'Количество студентов',
+
+        cipher: 'Шифр',
+        subject: 'Предмет',
+        add_more: 'Добавить ещё',
+        directions: 'Направления',
+
+        region: 'Область',
+        location: 'Локация',
       },
     },
+
+    /* =====================
+          ENGLISH
+    ====================== */
     en: {
       translation: {
         universities: 'Universities',
@@ -152,7 +255,55 @@ i18n.use(initReactI18next).init({
 
         admin_cabinet: 'Admin cabinet',
         admins: 'Admins',
-        kafedras: 'Kafedra',
+        kafedras: 'Departments',
+
+        English: 'English',
+        Russian: 'Russian',
+        Uzbek: 'Uzbek',
+
+        /* BUTTONS */
+        add: 'Add',
+        save: 'Save',
+        edit: 'Edit',
+        delete: 'Delete',
+        back: 'Back',
+        cancel: 'Cancel',
+
+        /* TABLE/FORMS */
+        unattached: 'Unattached',
+        all_univers: 'All universities',
+        all_subjects: 'All subjects',
+
+        kafedra: 'Department',
+        kafedra_name: 'Department name',
+        action: 'Action',
+
+        email: 'Email',
+        role: 'Role',
+        owner: 'Owner',
+        superadmin: 'Superadmin',
+
+        title: 'Title',
+        kind: 'Kind',
+        language: 'Language',
+        font: 'Font',
+        year: 'Year',
+        file: 'File',
+        actions: 'Actions',
+        download: 'Download',
+
+        name: 'Name',
+        directions_name: 'Direction name',
+        course: 'Course',
+        students_count: 'Students count',
+
+        cipher: 'Cipher',
+        subject: 'Subject',
+        add_more: 'Add more',
+        directions: 'Directions',
+
+        region: 'Region',
+        location: 'Location',
       },
     },
   },

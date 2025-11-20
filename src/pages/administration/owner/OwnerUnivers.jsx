@@ -10,8 +10,10 @@ import {
 import Button from '../../../components/UI/Button'
 import CustomSelect from '../../../components/UI/CustomSelect'
 import { UniverAddress } from '../../../utils/unums'
+import { useTranslation } from 'react-i18next'
 
 const OwnerUnivers = () => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const { items, loading, error } = useSelector(selectUniver)
 
@@ -83,10 +85,10 @@ const OwnerUnivers = () => {
 
   return (
     <div className="universities-admin">
-      <h1>Университеты</h1>
+      <h1>{t('universities')}</h1>
 
       <Button className="toggle-form-btn" onClick={openAddForm}>
-        Добавить университет
+        {t('add')}
       </Button>
 
       {showForm && (
@@ -94,30 +96,34 @@ const OwnerUnivers = () => {
           <div className="modal">
             <form onSubmit={handleSubmit} className="univer-form">
               {/* Остальные поля */}
-              {['name', 'description', 'phone', 'email', 'location'].map(
-                (field) => (
-                  <input
-                    key={field}
-                    placeholder={field}
-                    value={form[field]}
-                    onChange={(e) =>
-                      setForm({ ...form, [field]: e.target.value })
-                    }
-                    style={{ display: 'block', marginBottom: 8 }}
-                  />
-                )
-              )}
+              {[
+                t('name'),
+                t('description'),
+                t('phone'),
+                t('email'),
+                t('location'),
+              ].map((field) => (
+                <input
+                  key={field}
+                  placeholder={field}
+                  value={form[field]}
+                  onChange={(e) =>
+                    setForm({ ...form, [field]: e.target.value })
+                  }
+                  style={{ display: 'block', marginBottom: 8 }}
+                />
+              ))}
               {/* ✅ Кастомный select */}
               <CustomSelect
                 value={form.address}
                 onChange={(v) => setForm({ ...form, address: v })}
                 options={addressOptions}
-                placeholder="Выберите область"
+                placeholder={t('region')}
               />
 
               <div className="form-actions">
                 <Button type="submit">
-                  {editingId ? 'Сохранить' : 'Добавить'}
+                  {editingId ? t('save') : t('add')}
                 </Button>
                 <Button
                   type="button"
@@ -126,7 +132,7 @@ const OwnerUnivers = () => {
                     setShowForm(false)
                   }}
                 >
-                  Отмена
+                  {t('cancel')}
                 </Button>
               </div>
             </form>
@@ -138,12 +144,13 @@ const OwnerUnivers = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       <ul className="univer-list">
-        {items.map((u) => (
+        {items.map((u, index) => (
           <li key={u.id} style={{ marginBottom: 10 }}>
             <div className="univer-header">
+              <p>{index + 1}</p>
               <strong style={{ cursor: 'pointer' }}>{u.name}</strong>
-              <Button onClick={() => openEditForm(u)}>Редактировать</Button>
-              <Button onClick={() => handlerDelete(u.id)}>Удалить</Button>
+              <Button onClick={() => openEditForm(u)}>{t('edit')}</Button>
+              <Button onClick={() => handlerDelete(u.id)}>{t('delete')}</Button>
             </div>
           </li>
         ))}
