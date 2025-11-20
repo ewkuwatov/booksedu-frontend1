@@ -292,7 +292,7 @@ export default function AdminLiteratures() {
               <td>{l.title}</td>
               <td>{l.kind}</td>
               <td>
-                {subjects.find((s) => s.id === l.subject_id)?.name || '-'}
+                {subjects.find((s) => s.id === l.subject_id)?.name || '-'} 
               </td>
               <td>{l.file_path ? '📄' : '-'}</td>
 
