@@ -307,7 +307,9 @@ export default function AdminLiteratures() {
                     .filter(Boolean)
                     .map((d) => d.course)
 
-                  return courses.length ? courses.join(', ') : '-'
+                  return courses.length
+                    ? courses.map((c) => `${c} ${t('course')}`).join(', ')
+                    : '-'
                 })()}
               </td>
 
