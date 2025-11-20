@@ -260,7 +260,7 @@ const OwnerSubjects = () => {
         <thead>
           <tr>
             <th>#</th>
-            <th>{t('name')}</th>
+            <th>{t('subjects')}</th>
             <th>{t('kafedra')}</th>
             <th>{t('university')}</th>
             <th>{t('directions')}</th>

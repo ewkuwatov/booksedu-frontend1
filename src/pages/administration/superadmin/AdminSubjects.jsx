@@ -256,7 +256,7 @@ const AdminSubjects = () => {
         <thead>
           <tr>
             <th>#</th>
-            <th>{t('name')}</th>
+            <th>{t('subjects')}</th>
             <th>{t('kafedra')}</th>
             <th>{t('directions')}</th>
             <th>{t('action')}</th>
