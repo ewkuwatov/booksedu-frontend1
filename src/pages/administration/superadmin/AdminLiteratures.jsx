@@ -25,6 +25,7 @@ import {
 } from '../../../utils/unums'
 
 import { useTranslation } from 'react-i18next'
+import { usePagination } from '../../../hooks/usePagination'
 
 const emptyForm = {
   title: '',
@@ -140,6 +141,11 @@ export default function AdminLiteratures() {
     await dispatch(downloadLiteratureFileThunk(id)).unwrap()
   }
 
+  // === ПАГИНАЦИЯ ===
+  const { page, maxPage, currentData, next, prev, goTo } = usePagination(
+    filtered,
+    10
+  )
   return (
     <div style={{ padding: 16 }}>
       <h1>
@@ -291,7 +297,7 @@ export default function AdminLiteratures() {
         </thead>
 
         <tbody>
-          {filtered.map((l, index) => (
+          {currentData.map((l, index) => (
             <tr key={l.id}>
               <td>{index + 1}</td>
               <td>{l.title}</td>
@@ -300,7 +306,7 @@ export default function AdminLiteratures() {
                 {subjects.find((s) => s.id === l.subject_id)?.name || '-'}
               </td>
               <td>
-                {(() => {
+                {() => {
                   const sub = subjects.find((s) => s.id === l.subject_id)
                   if (!sub) return '-'
 
@@ -313,7 +319,7 @@ export default function AdminLiteratures() {
                   return courses.length
                     ? courses.map((c) => `${c} ${t('course')}`).join(', ')
                     : '-'
-                })}
+                }}
               </td>
 
               <td>{l.file_path ? '📄' : '-'}</td>
@@ -332,6 +338,26 @@ export default function AdminLiteratures() {
           ))}
         </tbody>
       </table>
+      {/* ПАГИНАЦИЯ */}
+      <div className="pagination">
+        <button onClick={prev} disabled={page === 1}>
+          ←
+        </button>
+
+        {[...Array(maxPage)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i + 1)}
+            className={page === i + 1 ? 'active' : ''}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button onClick={next} disabled={page === maxPage}>
+          →
+        </button>
+      </div>
     </div>
   )
 }

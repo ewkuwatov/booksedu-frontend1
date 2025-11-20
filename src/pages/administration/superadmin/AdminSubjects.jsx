@@ -17,6 +17,7 @@ import {
 import { fetchAllKafedrasThunk } from '../../../features/admins/kafedraSlice'
 import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
 import { useTranslation } from 'react-i18next'
+import { usePagination } from '../../../hooks/usePagination'
 
 const AdminSubjects = () => {
   const { t } = useTranslation()
@@ -175,6 +176,12 @@ const AdminSubjects = () => {
     (d) => d.university_id === univerId
   )
 
+  // === ПАГИНАЦИЯ ===
+  const { page, maxPage, currentData, next, prev, goTo } = usePagination(
+    subjects,
+    10
+  )
+
   return (
     <div className="subjects-admin">
       <h1>
@@ -256,7 +263,7 @@ const AdminSubjects = () => {
           </tr>
         </thead>
         <tbody>
-          {subjects
+          {currentData
             .filter((s) => s.university_id === univerId)
             .map((s, index) => (
               <tr key={s.id}>
@@ -351,6 +358,26 @@ const AdminSubjects = () => {
             ))}
         </tbody>
       </table>
+      {/* ПАГИНАЦИЯ */}
+      <div className="pagination">
+        <button onClick={prev} disabled={page === 1}>
+          ←
+        </button>
+
+        {[...Array(maxPage)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i + 1)}
+            className={page === i + 1 ? 'active' : ''}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button onClick={next} disabled={page === maxPage}>
+          →
+        </button>
+      </div>
     </div>
   )
 }
