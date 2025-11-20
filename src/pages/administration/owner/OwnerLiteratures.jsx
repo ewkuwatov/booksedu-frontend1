@@ -377,6 +377,7 @@ export default function OwnerLiteratures() {
             <th>#</th>
             <th>{t('title')}</th>
             <th>{t('kind')}</th>
+            <th>{t('author')}</th>
             <th>{t('language')}</th>
             <th>{t('font')}</th>
             <th>{t('year')}</th>
