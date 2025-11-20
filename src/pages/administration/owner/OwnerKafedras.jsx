@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from 'react'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import Input from '../../../components/UI/Input'
+import { usePagination } from '../../../hooks/usePagination'
 import { useTranslation } from 'react-i18next'
 
 const OwnerKafedras = () => {
@@ -31,10 +32,7 @@ const OwnerKafedras = () => {
     handleDelete,
     resetForm,
   } = useCrud({
-    initialForm: {
-      name: '',
-      university_id: null,
-    },
+    initialForm: { name: '', university_id: null },
     fetchAll: () => dispatch(fetchAllKafedrasThunk()).unwrap(),
     add: (data) => dispatch(fetchAddKafedrasThunk(data)).unwrap(),
     update: (id, data) =>
@@ -50,8 +48,15 @@ const OwnerKafedras = () => {
     ? kafedras.filter((d) => d.university_id === Number(filterUniver))
     : kafedras
 
+  // === ПАГИНАЦИЯ ===
+  const { page, maxPage, currentData, next, prev, goTo } = usePagination(
+    filtered,
+    10
+  )
+
   return (
     <div className="kafedra-admin">
+      {/* Кнопка добавить */}
       <button
         onClick={() => {
           resetForm()
@@ -62,6 +67,7 @@ const OwnerKafedras = () => {
         {t('add')}
       </button>
 
+      {/* МОДАЛКА */}
       {openForm && (
         <div className="modal-overlay">
           <form onSubmit={handleSubmit} className="kafedra-form">
@@ -70,6 +76,7 @@ const OwnerKafedras = () => {
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder={t('kafedra_name')}
             />
+
             <select
               value={form.university_id ?? ''}
               onChange={(e) =>
@@ -100,6 +107,8 @@ const OwnerKafedras = () => {
           </form>
         </div>
       )}
+
+      {/* ФИЛЬТР */}
       <div className="filter-block">
         <select
           value={filterUniver}
@@ -114,6 +123,7 @@ const OwnerKafedras = () => {
         </select>
       </div>
 
+      {/* ТАБЛИЦА */}
       <table className="kafedra-table">
         <thead>
           <tr>
@@ -124,21 +134,16 @@ const OwnerKafedras = () => {
           </tr>
         </thead>
         <tbody>
-          {filtered.map((k, index) => (
+          {currentData.map((k, index) => (
             <tr key={k.id}>
-              <td>{index + 1}</td>
+              <td>{(page - 1) * 10 + index + 1}</td>
               <td>{k.name}</td>
               <td>
                 {univers.find((u) => u.id === k.university_id)?.name || '-'}
               </td>
               <td>
-                <button className="edit-btn" onClick={() => startEditing(k)}>
-                  {t('edit')}
-                </button>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(k.id)}
-                >
+                <button onClick={() => startEditing(k)}>{t('edit')}</button>
+                <button onClick={() => handleDelete(k.id)}>
                   {t('delete')}
                 </button>
               </td>
@@ -146,6 +151,27 @@ const OwnerKafedras = () => {
           ))}
         </tbody>
       </table>
+
+      {/* ПАГИНАЦИЯ */}
+      <div className="pagination">
+        <button onClick={prev} disabled={page === 1}>
+          ←
+        </button>
+
+        {[...Array(maxPage)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i + 1)}
+            className={page === i + 1 ? 'active' : ''}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button onClick={next} disabled={page === maxPage}>
+          →
+        </button>
+      </div>
     </div>
   )
 }

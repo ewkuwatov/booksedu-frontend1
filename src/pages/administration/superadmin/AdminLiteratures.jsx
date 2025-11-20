@@ -313,7 +313,7 @@ export default function AdminLiteratures() {
                   return courses.length
                     ? courses.map((c) => `${c} ${t('course')}`).join(', ')
                     : '-'
-                })()}
+                })}
               </td>
 
               <td>{l.file_path ? '📄' : '-'}</td>
