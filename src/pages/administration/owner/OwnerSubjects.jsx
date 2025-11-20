@@ -1,42 +1,38 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+
 import {
-  selectAuth,
-  selectDirection,
-  selectKafedra,
   selectSubject,
+  selectUniver,
+  selectKafedra,
+  selectDirection,
 } from '../../../store'
 
 import {
   fetchAllGetSubjectsThunk,
   fetchDeleteSubjectsThunk,
   fetchAddSubjectsThunkBulk,
-  fetchUpdateSubjectsThunk,
 } from '../../../features/admins/subjectSlice'
 
+import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import { fetchAllKafedrasThunk } from '../../../features/admins/kafedraSlice'
 import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
 import { useTranslation } from 'react-i18next'
 
-const AdminSubjects = () => {
+const OwnerSubjects = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
 
-  const { user } = useSelector(selectAuth)
+  const { items: subjects } = useSelector(selectSubject)
+  const { items: univers } = useSelector(selectUniver)
   const { items: kafedras } = useSelector(selectKafedra)
   const { items: directions } = useSelector(selectDirection)
-  const { items: subjects } = useSelector(selectSubject)
-
+  const [filterUniver, setFilterUniver] = useState('')
   const [openForm, setOpenForm] = useState(false)
-  const [editingId, setEditingId] = useState(null)
-  const [editData, setEditData] = useState(null)
-
-  const univerId = user?.university_id ?? null
-
   const [subjectsForm, setSubjectsForm] = useState([
     {
       name: '',
-      university_id: univerId,
+      university_id: null,
       kafedra_id: null,
       direction_ids: [],
       error: false,
@@ -44,18 +40,25 @@ const AdminSubjects = () => {
   ])
 
   useEffect(() => {
-    if (univerId) {
-      dispatch(fetchAllKafedrasThunk()).unwrap()
-      dispatch(fetchAllDirectionThunk()).unwrap()
-      dispatch(fetchAllGetSubjectsThunk()).unwrap()
-    }
-  }, [dispatch, univerId])
+    dispatch(fetchAllUniverThunk()).unwrap()
+    dispatch(fetchAllKafedrasThunk()).unwrap()
+    dispatch(fetchAllDirectionThunk()).unwrap()
+    dispatch(fetchAllGetSubjectsThunk()).unwrap()
+  }, [dispatch])
 
-  const checkDuplicate = (name, kafedra_id) => {
+  const filteredSubjects = useMemo(
+    () =>
+      filterUniver
+        ? subjects.filter((s) => s.university_id === Number(filterUniver))
+        : subjects,
+    [subjects, filterUniver]
+  )
+
+  const checkDuplicate = (name, university_id, kafedra_id) => {
     return subjects.some(
       (s) =>
         s.name.trim().toLowerCase() === name.trim().toLowerCase() &&
-        s.university_id === univerId &&
+        s.university_id === university_id &&
         s.kafedra_id === kafedra_id
     )
   }
@@ -68,10 +71,13 @@ const AdminSubjects = () => {
               ...item,
               [field]: value,
               error:
-                field !== 'name' && field !== 'kafedra_id'
+                field !== 'name' &&
+                field !== 'kafedra_id' &&
+                field !== 'university_id'
                   ? item.error
                   : checkDuplicate(
                       field === 'name' ? value : item.name,
+                      field === 'university_id' ? value : item.university_id,
                       field === 'kafedra_id' ? value : item.kafedra_id
                     ),
             }
@@ -100,7 +106,7 @@ const AdminSubjects = () => {
       ...prev,
       {
         name: '',
-        university_id: univerId,
+        university_id: null,
         kafedra_id: null,
         direction_ids: [],
         error: false,
@@ -110,8 +116,11 @@ const AdminSubjects = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const valid = subjectsForm.filter((s) => s.name && s.kafedra_id && !s.error)
-    if (!valid.length) return alert(t('fix_errors'))
+
+    const valid = subjectsForm.filter(
+      (s) => s.name && s.university_id && s.kafedra_id && !s.error
+    )
+    if (!valid.length) return alert('Исправьте ошибки в форме ✅')
 
     await dispatch(fetchAddSubjectsThunkBulk(valid)).unwrap()
     await dispatch(fetchAllGetSubjectsThunk()).unwrap()
@@ -119,7 +128,7 @@ const AdminSubjects = () => {
     setSubjectsForm([
       {
         name: '',
-        university_id: univerId,
+        university_id: null,
         kafedra_id: null,
         direction_ids: [],
         error: false,
@@ -132,227 +141,157 @@ const AdminSubjects = () => {
     await dispatch(fetchDeleteSubjectsThunk(id)).unwrap()
   }
 
-  const startEditing = (subject) => {
-    setEditingId(subject.id)
-    setEditData({
-      name: subject.name,
-      kafedra_id: subject.kafedra_id,
-      direction_ids: subject.direction_ids || [],
-    })
-  }
-
-  const handleEditChange = (field, value) => {
-    setEditData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
-
-  const toggleEditDirection = (id) => {
-    setEditData((prev) => ({
-      ...prev,
-      direction_ids: prev.direction_ids.includes(id)
-        ? prev.direction_ids.filter((x) => x !== id)
-        : [...prev.direction_ids, id],
-    }))
-  }
-
-  const handleSaveEdit = async (id) => {
-    await dispatch(
-      fetchUpdateSubjectsThunk({
-        id,
-        updated: { ...editData, university_id: univerId },
-      })
-    ).unwrap()
-
-    setEditingId(null)
-    setEditData(null)
-    await dispatch(fetchAllGetSubjectsThunk()).unwrap()
-  }
-
-  const availableKafedras = kafedras.filter((k) => k.university_id === univerId)
-  const availableDirections = directions.filter(
-    (d) => d.university_id === univerId
-  )
-
   return (
     <div className="subjects-admin">
-      <h1>
-        📚 {t('subjects')} — {t('university')} ID: {univerId}
-      </h1>
-
+      <h1>📚 Subjects</h1>
       <button className="primary-btn" onClick={() => setOpenForm(true)}>
-        ➕ {t('add')}
+        {t('add')}
       </button>
-
       {openForm && (
         <div className="modal-overlay">
           <form onSubmit={handleSubmit} className="subjects-form">
-            {subjectsForm.map((subj, index) => (
-              <div key={index} className="subject-item">
-                <input
-                  placeholder={t('name')}
-                  value={subj.name}
-                  onChange={(e) => updateField(index, 'name', e.target.value)}
-                  className="subject-input"
-                />
+            {subjectsForm.map((subj, index) => {
+              const availableKafedras = kafedras.filter(
+                (k) => k.university_id === subj.university_id
+              )
+              const availableDirections = directions.filter(
+                (d) => d.university_id === subj.university_id
+              )
 
-                <select
-                  value={subj.kafedra_id ?? ''}
-                  onChange={(e) =>
-                    updateField(index, 'kafedra_id', Number(e.target.value))
-                  }
-                  className="subject-select"
-                >
-                  <option value="">{t('kafedra')}</option>
-                  {availableKafedras.map((k) => (
-                    <option key={k.id} value={k.id}>
-                      {k.name}
-                    </option>
-                  ))}
-                </select>
+              return (
+                <div key={index} className="subject-item">
+                  <input
+                    placeholder={t('name')}
+                    value={subj.name}
+                    onChange={(e) => updateField(index, 'name', e.target.value)}
+                    className="subject-input"
+                  />
 
-                {subj.error && (
-                  <p style={{ color: 'red', fontSize: 12 }}>
-                    ❗ {t('duplicate_subject')}
-                  </p>
-                )}
+                  <select
+                    value={subj.university_id ?? ''}
+                    onChange={(e) =>
+                      updateField(
+                        index,
+                        'university_id',
+                        Number(e.target.value)
+                      )
+                    }
+                    className="subject-select"
+                  >
+                    <option value="">{t('university')}</option>
+                    {univers.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name}
+                      </option>
+                    ))}
+                  </select>
 
-                <div className="direction-checkboxes">
-                  <strong className="directionBtn">{t('directions')}</strong>
-                  {availableDirections.map((d) => (
-                    <label key={d.id} style={{ display: 'block' }}>
-                      <input
-                        type="checkbox"
-                        checked={subj.direction_ids.includes(d.id)}
-                        onChange={() => toggleDirection(index, d.id)}
-                      />
-                      {d.name} ({d.course} {t('course')})
-                    </label>
-                  ))}
+                  <select
+                    value={subj.kafedra_id ?? ''}
+                    disabled={!subj.university_id}
+                    onChange={(e) =>
+                      updateField(index, 'kafedra_id', Number(e.target.value))
+                    }
+                    className="subject-select"
+                  >
+                    <option value="">{t('kafedra')}</option>
+                    {availableKafedras.map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  {subj.error && (
+                    <p style={{ color: 'red', fontSize: 12 }}>
+                      ❗ Такой предмет уже существует в этом университете и
+                      кафедре
+                    </p>
+                  )}
+
+                  <div className="direction-checkboxes">
+                    <strong className="directionBtn">Направления:</strong>
+                    {availableDirections.map((d) => (
+                      <label key={d.id} style={{ display: 'block' }}>
+                        <input
+                          type="checkbox"
+                          checked={subj.direction_ids.includes(d.id)}
+                          onChange={() => toggleDirection(index, d.id)}
+                        />
+                        {d.name} ({d.course} курс)
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
 
             <button type="button" onClick={addFormRow}>
-              ➕ {t('add_more')}
+              {t('add_more')}
             </button>
-            <button type="submit">✅ {t('save')}</button>
+            <button type="submit">{t('save')}</button>
             <button type="button" onClick={() => setOpenForm(false)}>
-              ✖ {t('cancel')}
+              {t('cancel')}
             </button>
           </form>
         </div>
       )}
 
+      <select
+        value={filterUniver}
+        onChange={(e) => setFilterUniver(e.target.value)}
+        style={{ marginTop: 20 }}
+      >
+        <option value="">Все</option>
+        {univers.map((u) => (
+          <option key={u.id} value={u.id}>
+            {u.name}
+          </option>
+        ))}
+      </select>
       <table style={{ marginTop: 20 }}>
         <thead>
           <tr>
             <th>#</th>
             <th>{t('name')}</th>
             <th>{t('kafedra')}</th>
+            <th>{t('university')}</th>
             <th>{t('directions')}</th>
             <th>{t('action')}</th>
           </tr>
         </thead>
         <tbody>
-          {subjects
-            .filter((s) => s.university_id === univerId)
-            .map((s, index) => (
-              <tr key={s.id}>
-                <td>{index + 1}</td>
+          {filteredSubjects.map((s, index) => (
+            <tr key={s.id}>
+              <td>{index + 1}</td>
+              <td>{s.name}</td>
+              <td>
+                {kafedras.find((k) => k.id === s.kafedra_id)?.name || '-'}
+              </td>
+              <td>
+                {univers.find((u) => u.id === s.university_id)?.name || '-'}
+              </td>
+              <td>
+                {(s.direction_ids ?? [])
+                  .map((id) => {
+                    const d = directions.find((x) => x.id === id)
+                    return d ? `${d.name} (${d.course}-курс)` : null
+                  })
+                  .filter(Boolean)
+                  .join(', ') || '-'}
+              </td>
 
-                <td>
-                  {editingId === s.id ? (
-                    <input
-                      value={editData.name}
-                      onChange={(e) => handleEditChange('name', e.target.value)}
-                    />
-                  ) : (
-                    s.name
-                  )}
-                </td>
-
-                <td>
-                  {editingId === s.id ? (
-                    <select
-                      value={editData.kafedra_id ?? ''}
-                      onChange={(e) =>
-                        handleEditChange('kafedra_id', Number(e.target.value))
-                      }
-                    >
-                      <option value="">{t('kafedra')}</option>
-                      {availableKafedras.map((k) => (
-                        <option key={k.id} value={k.id}>
-                          {k.name}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    availableKafedras.find((k) => k.id === s.kafedra_id)
-                      ?.name || '-'
-                  )}
-                </td>
-
-                <td>
-                  {editingId === s.id ? (
-                    <div>
-                      {availableDirections.map((d) => (
-                        <label key={d.id} style={{ display: 'block' }}>
-                          <input
-                            type="checkbox"
-                            checked={editData.direction_ids.includes(d.id)}
-                            onChange={() => toggleEditDirection(d.id)}
-                          />
-                          {d.name} ({d.course} {t('course')})
-                        </label>
-                      ))}
-                    </div>
-                  ) : (
-                    (s.direction_ids ?? [])
-                      .map((id) => {
-                        const d = availableDirections.find((x) => x.id === id)
-                        return d
-                          ? `${d.name} (${d.course} ${t('course')})`
-                          : null
-                      })
-                      .filter(Boolean)
-                      .join(', ') || '-'
-                  )}
-                </td>
-
-                <td>
-                  {editingId === s.id ? (
-                    <>
-                      <button onClick={() => handleSaveEdit(s.id)}>
-                        💾 {t('save')}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingId(null)
-                          setEditData(null)
-                        }}
-                      >
-                        ❌ {t('cancel')}
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button onClick={() => startEditing(s)}>
-                        ✏️ {t('edit')}
-                      </button>
-                      <button onClick={() => handleDelete(s.id)}>
-                        🗑 {t('delete')}
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
+              <td>
+                <button onClick={() => handleDelete(s.id)}>
+                  {t('delete')}
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
   )
 }
 
-export default AdminSubjects
+export default OwnerSubjects
