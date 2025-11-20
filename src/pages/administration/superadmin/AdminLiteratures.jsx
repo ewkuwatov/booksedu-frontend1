@@ -13,7 +13,7 @@ import {
 
 import { fetchAllGetSubjectsThunk } from '../../../features/admins/subjectSlice'
 
-import { selectAuth, selectSubject } from '../../../store'
+import { selectAuth, selectDirection, selectSubject } from '../../../store'
 
 import {
   LanguageEnum,
@@ -52,6 +52,7 @@ export default function AdminLiteratures() {
   const { user } = useSelector(selectAuth)
   const { items: subjects } = useSelector(selectSubject)
   const { items: literatures } = useSelector((s) => s.literatures)
+  const { items: directions } = useSelector(selectDirection)
 
   const [openForm, setOpenForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
@@ -250,11 +251,24 @@ export default function AdminLiteratures() {
 
             {subjects
               .filter((s) => s.university_id === user.university_id)
-              .map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
+              .map((s) => {
+                const dirs = s.direction_ids || []
+                const courses = dirs
+                  .map((id) => directions.find((d) => d.id === id))
+                  .filter(Boolean)
+                  .map((d) => d.course)
+
+                const courseLabel = courses.length
+                  ? ` (${courses.join(', ')} курс)`
+                  : ''
+
+                return (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                    {courseLabel}
+                  </option>
+                )
+              })}
           </select>
 
           <div style={{ display: 'flex', gap: 8 }}>
@@ -292,7 +306,7 @@ export default function AdminLiteratures() {
               <td>{l.title}</td>
               <td>{l.kind}</td>
               <td>
-                {subjects.find((s) => s.id === l.subject_id)?.name || '-'} 
+                {subjects.find((s) => s.id === l.subject_id)?.name || '-'}
               </td>
               <td>{l.file_path ? '📄' : '-'}</td>
 

@@ -105,8 +105,6 @@ const AdminKafedra = () => {
           ))}
         </tbody>
       </table>
-
-      <ul></ul>
     </div>
   )
 }
