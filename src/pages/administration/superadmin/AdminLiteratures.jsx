@@ -251,24 +251,11 @@ export default function AdminLiteratures() {
 
             {subjects
               .filter((s) => s.university_id === user.university_id)
-              .map((s) => {
-                const dirs = s.direction_ids || []
-                const courses = dirs
-                  .map((id) => directions.find((d) => d.id === id))
-                  .filter(Boolean)
-                  .map((d) => d.course)
-
-                const courseLabel = courses.length
-                  ? ` (${courses.join(', ')} курс)`
-                  : ''
-
-                return (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                    {courseLabel}
-                  </option>
-                )
-              })}
+              .map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
           </select>
 
           <div style={{ display: 'flex', gap: 8 }}>
@@ -294,6 +281,7 @@ export default function AdminLiteratures() {
             <th>{t('title')}</th>
             <th>{t('kind')}</th>
             <th>{t('subject')}</th>
+            <th>{t('course')}</th>
             <th>{t('file')}</th>
             <th>{t('action')}</th>
           </tr>
@@ -308,6 +296,21 @@ export default function AdminLiteratures() {
               <td>
                 {subjects.find((s) => s.id === l.subject_id)?.name || '-'}
               </td>
+              <td>
+                {(() => {
+                  const sub = subjects.find((s) => s.id === l.subject_id)
+                  if (!sub) return '-'
+
+                  const dirs = sub.direction_ids || []
+                  const courses = dirs
+                    .map((id) => directions.find((d) => d.id === id))
+                    .filter(Boolean)
+                    .map((d) => d.course)
+
+                  return courses.length ? courses.join(', ') : '-'
+                })()}
+              </td>
+
               <td>{l.file_path ? '📄' : '-'}</td>
 
               <td>
