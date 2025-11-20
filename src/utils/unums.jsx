@@ -1,41 +1,41 @@
 // src/constants/enums.js
 
 export const LanguageEnum = {
-  uzbek: 'uzbek',
-  russian: 'russian',
-  karakalpak: 'karakalpak',
-  english: 'english',
+  uzbek: "o'zbek",
+  russian: 'rus',
+  karakalpak: 'qoraqolpoq',
+  english: 'ingliz',
 }
 
 export const FontTypeEnum = {
   kirill: 'kirill',
-  latin: 'latin',
-  english: 'english',
+  latin: 'lotin',
+  english: 'ingliz',
 }
 
 export const ConditionEnum = {
-  actual: 'actual',
-  unactual: 'unactual',
+  actual: 'Zamon talabiga mos',
+  unactual: 'Zamon talabiga mos emas',
 }
 
 export const UsageStatusEnum = {
-  use: 'use',
-  unused: 'unused',
+  use: 'Fan dasturida foydalaniladi',
+  unused: 'Fan dasturida foydalanilmaydi',
 }
 
 export const UniverAddress = {
-  toshkent: 'Tashkent city',
-  toshkent_d: 'Tashkent Region',
-  samarkand: 'Samarkand region',
-  buxara: 'Bukhara Region',
-  andijan: 'Andijan Region',
-  jizzakh: 'Jizzakh Region',
-  surkhan: 'Surkhandarya Region',
-  fergana: 'Fergana region',
-  xorezm: 'Khorezm region',
-  syrdarya: 'Syrdarya Region',
-  karakalpak: 'Republic of Karakalpakstan.',
-  kashka: 'Kashkadarya region',
-  namangan: 'Namangan Region',
-  navoi: 'Navoi Region',
+  toshkent: 'Toshkent shahar',
+  toshkent_d: 'Toshkent viloyati',
+  samarkand: 'Samarqand viloyati',
+  buxara: 'Buxoro viloyati',
+  andijan: 'Andijon viloyati',
+  jizzakh: 'Jizzax viloyati',
+  surkhan: 'Surxondaryo viloyati',
+  fergana: "Fargo'na viloyati",
+  xorezm: 'Xorazm viloyati',
+  syrdarya: 'Sirdaryo viloyati',
+  karakalpak: 'Qoraqalpogʻiston',
+  kashka: 'Qashqadaryo viloyati',
+  namangan: 'Namangan viloyati',
+  navoi: 'Navoi viloyati',
 }

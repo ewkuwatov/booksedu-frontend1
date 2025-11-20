@@ -18,22 +18,25 @@ import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import { useTranslation } from 'react-i18next'
 
 // enums (должны совпадать со значениями в бэке)
-const LANGUAGE_OPTIONS = ['uzbek', 'russian', 'karakalpak', 'english']
-const FONT_OPTIONS = ['kirill', 'latin', 'english']
-const CONDITION_OPTIONS = ['actual', 'unactual']
-const USAGE_OPTIONS = ['use', 'unused']
+const LANGUAGE_OPTIONS = ["o'zbek", 'rus', 'qoraqolpoq', 'ingliz']
+const FONT_OPTIONS = ['kirill', 'lotin', 'ingliz']
+const CONDITION_OPTIONS = ['Zamon talabiga mos', 'Zamon talabiga mos emas']
+const USAGE_OPTIONS = [
+  'Fan dasturida foydalaniladi',
+  'Fan dasturida foydalanilmaydi',
+]
 
 const emptyForm = {
   title: '',
   kind: '',
   author: '',
   publisher: '',
-  language: 'uzbek',
-  font_type: 'latin',
+  language: "o'zbek",
+  font_type: 'lotin',
   year: new Date().getFullYear(),
   printed_count: '',
-  condition: 'actual',
-  usage_status: 'use',
+  condition: 'Zamon talabiga mos',
+  usage_status: 'Fan dasturida foydalaniladi',
   image: '',
   file_path: '',
 
@@ -90,12 +93,12 @@ export default function OwnerLiteratures() {
       kind: item.kind ?? '',
       author: item.author ?? '',
       publisher: item.publisher ?? '',
-      language: item.language ?? 'uzbek',
-      font_type: item.font_type ?? 'latin',
+      language: item.language ?? "o'zbek",
+      font_type: item.font_type ?? 'lotin',
       year: item.year ?? new Date().getFullYear(),
       printed_count: item.printed_count ?? '',
-      condition: item.condition ?? 'actual',
-      usage_status: item.usage_status ?? 'use',
+      condition: item.condition ?? 'Zamon talabiga mos',
+      usage_status: item.usage_status ?? 'Fan dasturida foydalaniladi',
       image: item.image ?? '',
       file_path: item.file_path ?? '',
       subject_id: item.subject_id ?? null,
@@ -204,22 +207,22 @@ export default function OwnerLiteratures() {
         <div className="modal-overlay">
           <form onSubmit={onSubmit} className="directions-form">
             <input
-              placeholder="Title"
+              placeholder={t('title')}
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
             <input
-              placeholder="Kind"
+              placeholder={t('kind')}
               value={form.kind}
               onChange={(e) => setForm({ ...form, kind: e.target.value })}
             />
             <input
-              placeholder="Author"
+              placeholder={t('author')}
               value={form.author}
               onChange={(e) => setForm({ ...form, author: e.target.value })}
             />
             <input
-              placeholder="Publisher"
+              placeholder={t('publisher')}
               value={form.publisher}
               onChange={(e) => setForm({ ...form, publisher: e.target.value })}
             />
@@ -228,6 +231,7 @@ export default function OwnerLiteratures() {
               value={form.language}
               onChange={(e) => setForm({ ...form, language: e.target.value })}
             >
+              <option value="">{t('language')}</option>
               {LANGUAGE_OPTIONS.map((o) => (
                 <option key={o} value={o}>
                   {o}
@@ -239,6 +243,7 @@ export default function OwnerLiteratures() {
               value={form.font_type}
               onChange={(e) => setForm({ ...form, font_type: e.target.value })}
             >
+              <option value="">{t('font')}</option>
               {FONT_OPTIONS.map((o) => (
                 <option key={o} value={o}>
                   {o}
@@ -248,14 +253,14 @@ export default function OwnerLiteratures() {
 
             <input
               type="number"
-              placeholder="Year"
+              placeholder={t('year')}
               value={form.year}
               onChange={(e) => setForm({ ...form, year: e.target.value })}
             />
 
             <input
               type="number"
-              placeholder="Printed count"
+              placeholder={t('printed_count')}
               value={form.printed_count ?? ''}
               onChange={(e) =>
                 setForm({ ...form, printed_count: e.target.value })
@@ -295,7 +300,7 @@ export default function OwnerLiteratures() {
                 })
               }
             >
-              <option value="">University</option>
+              <option value="">{t('universities')}</option>
               {univers.map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.name}
@@ -312,7 +317,7 @@ export default function OwnerLiteratures() {
                 })
               }
             >
-              <option value="">Subject</option>
+              <option value="">{t('subjects')}</option>
               {subjects
                 .filter(
                   (s) =>
@@ -333,7 +338,7 @@ export default function OwnerLiteratures() {
                   checked={useFileMode}
                   onChange={(e) => setUseFileMode(e.target.checked)}
                 />{' '}
-                Attach file
+                {t('attach_file')}
               </label>
 
               <input
@@ -387,6 +392,7 @@ export default function OwnerLiteratures() {
               <td>{index + 1}</td>
               <td>{l.title}</td>
               <td>{l.kind}</td>
+              <td>{l.author}</td>
               <td>{l.language}</td>
               <td>{l.font_type}</td>
               <td>{l.year}</td>
