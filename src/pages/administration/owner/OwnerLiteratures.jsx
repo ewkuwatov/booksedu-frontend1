@@ -383,7 +383,7 @@ export default function OwnerLiteratures() {
             <th>{t('university')}</th>
             <th>{t('subject')}</th>
             <th>{t('file')}</th>
-            <th>{t('actions')}</th>
+            <th>{t('action')}</th>
           </tr>
         </thead>
         <tbody>
