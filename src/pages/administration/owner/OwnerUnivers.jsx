@@ -33,9 +33,9 @@ const OwnerUnivers = () => {
     dispatch(fetchAllUniverThunk())
   }, [dispatch])
 
-  const addressOptions = Object.entries(UniverAddress).map(([label]) => ({
-    value: label,
-    label,
+  const addressOptions = Object.entries(UniverAddress).map(([key, value]) => ({
+    value: key, // в базу идёт ключ
+    label: value, // в UI показываем value
   }))
 
   const resetForm = () => {

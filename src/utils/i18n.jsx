@@ -86,16 +86,15 @@ i18n.use(initReactI18next).init({
         owner: 'Egalik qiluvchi',
         superadmin: 'Superadmin',
 
-        title: 'Sarlavha',
-        kind: 'Turi',
-        language: 'Til',
-        font: 'Shrift',
+        title: 'Adabiyot nomi',
+        kind: 'O‘quv adabiyoti turi',
+        language: 'Adabiyot tili',
+        font: 'Yozuvi',
         year: 'Yil',
         file: 'Fayl',
         actions: 'Amallar',
         download: 'Yuklab olish',
 
-        name: 'Nomi',
         directions_name: 'Yo‘nalish nomi',
         course: 'Kurs',
         students_count: 'Talabalar soni',
@@ -103,7 +102,6 @@ i18n.use(initReactI18next).init({
         cipher: 'Shifr',
         subject: 'Fan',
         add_more: 'Yana qo‘shish',
-        directions: 'Yo‘nalishlar',
 
         region: 'Hudud',
         location: 'Joylashuv',
@@ -202,7 +200,6 @@ i18n.use(initReactI18next).init({
         cipher: 'Шифр',
         subject: 'Предмет',
         add_more: 'Добавить ещё',
-        directions: 'Направления',
 
         region: 'Область',
         location: 'Локация',
@@ -300,7 +297,6 @@ i18n.use(initReactI18next).init({
         cipher: 'Cipher',
         subject: 'Subject',
         add_more: 'Add more',
-        directions: 'Directions',
 
         region: 'Region',
         location: 'Location',
