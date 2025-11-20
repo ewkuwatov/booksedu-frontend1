@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selectUser } from '../../../store'
 import { useEffect } from 'react'
 import { fetchAllUsersThunk } from '../../../features/admins/userSlice'
+import { usePagination } from '../../../hooks/usePagination'
 
 const OwnerUsers = () => {
   const dispatch = useDispatch()
@@ -10,6 +11,17 @@ const OwnerUsers = () => {
   useEffect(() => {
     dispatch(fetchAllUsersThunk()).unwrap()
   }, [])
+
+  // === ПАГИНАЦИЯ ===
+  const { page, maxPage, currentData, next, prev, goTo } = usePagination(
+    items,
+    10
+  )
+
+  // Сбрасываем страницу при изменении items
+  useEffect(() => {
+    goTo(1)
+  }, [items])
 
   if (loading) return <p>Загрузка...</p>
   if (error) return <p style={{ color: 'red' }}>{error}</p>
@@ -28,7 +40,7 @@ const OwnerUsers = () => {
           </tr>
         </thead>
         <tbody>
-          {items.map((u) => (
+          {currentData.map((u) => (
             <tr key={u.id}>
               <td>{u.id}</td>
               <td>
@@ -40,6 +52,26 @@ const OwnerUsers = () => {
           ))}
         </tbody>
       </table>
+      {/* ПАГИНАЦИЯ */}
+      <div className="pagination">
+        <button onClick={prev} disabled={page === 1}>
+          ←
+        </button>
+
+        {[...Array(maxPage)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i + 1)}
+            className={page === i + 1 ? 'active' : ''}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button onClick={next} disabled={page === maxPage}>
+          →
+        </button>
+      </div>
     </div>
   )
 }

@@ -11,6 +11,7 @@ import Input from '../../../components/UI/Input'
 import { useCrud } from '../../../hooks/useCrud'
 import Button from '../../../components/UI/Button'
 import { useTranslation } from 'react-i18next'
+import { usePagination } from '../../../hooks/usePagination'
 
 const AdminDirections = () => {
   const { t } = useTranslation()
@@ -55,6 +56,12 @@ const AdminDirections = () => {
       )
     }
   }, [directions, user])
+
+  // === ПАГИНАЦИЯ ===
+  const { page, maxPage, currentData, next, prev, goTo } = usePagination(
+    filtered,
+    10
+  )
 
   return (
     <div>
@@ -131,7 +138,7 @@ const AdminDirections = () => {
           </tr>
         </thead>
         <tbody>
-          {filtered.map((d, index) => (
+          {currentData.map((d, index) => (
             <tr key={d.id}>
               <td>{index + 1}</td>
               <td>{d.number}</td>
@@ -148,6 +155,26 @@ const AdminDirections = () => {
           ))}
         </tbody>
       </table>
+      {/* ПАГИНАЦИЯ */}
+      <div className="pagination">
+        <button onClick={prev} disabled={page === 1}>
+          ←
+        </button>
+
+        {[...Array(maxPage)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i + 1)}
+            className={page === i + 1 ? 'active' : ''}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button onClick={next} disabled={page === maxPage}>
+          →
+        </button>
+      </div>
     </div>
   )
 }

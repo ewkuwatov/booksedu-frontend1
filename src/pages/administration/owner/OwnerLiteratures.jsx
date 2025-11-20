@@ -18,6 +18,7 @@ import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
 import { fetchAllGetSubjectsThunk } from '../../../features/admins/subjectSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import { useTranslation } from 'react-i18next'
+import { usePagination } from '../../../hooks/usePagination'
 
 // enums (должны совпадать со значениями в бэке)
 const LANGUAGE_OPTIONS = ["o'zbek", 'rus', 'qoraqolpoq', 'ingliz']
@@ -167,6 +168,12 @@ export default function OwnerLiteratures() {
   const onDownload = async (id) => {
     await dispatch(downloadLiteratureFileThunk(id)).unwrap()
   }
+
+  // === ПАГИНАЦИЯ ===
+  const { page, maxPage, currentData, next, prev, goTo } = usePagination(
+    filtered,
+    10
+  )
 
   return (
     <div style={{ padding: 16 }}>
@@ -393,7 +400,7 @@ export default function OwnerLiteratures() {
           </tr>
         </thead>
         <tbody>
-          {filtered.map((l, index) => (
+          {currentData.map((l, index) => (
             <tr key={l.id}>
               <td>{index + 1}</td>
               <td>{l.title}</td>
@@ -434,6 +441,26 @@ export default function OwnerLiteratures() {
               </td>
             </tr>
           ))}
+          {/* ПАГИНАЦИЯ */}
+          <div className="pagination">
+            <button onClick={prev} disabled={page === 1}>
+              ←
+            </button>
+
+            {[...Array(maxPage)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i + 1)}
+                className={page === i + 1 ? 'active' : ''}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button onClick={next} disabled={page === maxPage}>
+              →
+            </button>
+          </div>
           {!loading && !filtered.length && (
             <tr>
               <td
