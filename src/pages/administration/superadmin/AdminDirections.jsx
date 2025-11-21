@@ -12,6 +12,7 @@ import { useCrud } from '../../../hooks/useCrud'
 import Button from '../../../components/UI/Button'
 import { useTranslation } from 'react-i18next'
 import { usePagination } from '../../../hooks/usePagination'
+import { Pencil, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const AdminDirections = () => {
   const { t } = useTranslation()
@@ -65,6 +66,7 @@ const AdminDirections = () => {
 
   return (
     <div>
+      <h1>{t('directions')}</h1>
       <Button
         onClick={() => {
           resetForm()
@@ -149,7 +151,9 @@ const AdminDirections = () => {
                 {univers.find((u) => u.id === d.university_id)?.name || '-'}
               </td>
               <td>
-                <button onClick={() => startEditing(d)}>{t('edit')}</button>
+                <button onClick={() => startEditing(d)}>
+                  <Pencil />
+                </button>
               </td>
             </tr>
           ))}
@@ -158,7 +162,7 @@ const AdminDirections = () => {
       {/* ПАГИНАЦИЯ */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
-          ←
+          <ChevronLeft />
         </button>
 
         {[...Array(maxPage)].map((_, i) => (
@@ -172,7 +176,7 @@ const AdminDirections = () => {
         ))}
 
         <button onClick={next} disabled={page === maxPage}>
-          →
+          <ChevronRight />
         </button>
       </div>
     </div>

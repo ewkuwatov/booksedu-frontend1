@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next'
 import AdminPagesLink from '../components/AdminPagesLink'
 import OwnerStatistics from '../pages/administration/owner/OwnerStatistics'
 import { Outlet, Link } from 'react-router-dom'
 
 const AdminLayout = () => {
+  const { t } = useTranslation()
   return (
     <div className="adminLayout">
       {/* ЛЕВАЯ СТОРОНА - МЕНЮ */}
@@ -13,7 +15,7 @@ const AdminLayout = () => {
         </div>
 
         <Link className="backToSite" to="/">
-          Exit
+          {t('exit')}
         </Link>
       </aside>
 

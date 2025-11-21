@@ -19,6 +19,7 @@ import { fetchAllKafedrasThunk } from '../../../features/admins/kafedraSlice'
 import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
 import { useTranslation } from 'react-i18next'
 import { usePagination } from '../../../hooks/usePagination'
+import { ChevronLeft, ChevronRight, Trash } from 'lucide-react'
 
 const OwnerSubjects = () => {
   const { t } = useTranslation()
@@ -142,11 +143,11 @@ const OwnerSubjects = () => {
     await dispatch(fetchDeleteSubjectsThunk(id)).unwrap()
   }
 
-    // === ПАГИНАЦИЯ ===
-    const { page, maxPage, currentData, next, prev, goTo } = usePagination(
-      filteredSubjects,
-      10
-    )
+  // === ПАГИНАЦИЯ ===
+  const { page, maxPage, currentData, next, prev, goTo } = usePagination(
+    filteredSubjects,
+    10
+  )
 
   return (
     <div className="subjects-admin">
@@ -290,7 +291,7 @@ const OwnerSubjects = () => {
 
               <td>
                 <button onClick={() => handleDelete(s.id)}>
-                  {t('delete')}
+                  <Trash />
                 </button>
               </td>
             </tr>
@@ -300,7 +301,7 @@ const OwnerSubjects = () => {
       {/* ПАГИНАЦИЯ */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
-          ←
+          <ChevronLeft />
         </button>
 
         {[...Array(maxPage)].map((_, i) => (
@@ -314,7 +315,7 @@ const OwnerSubjects = () => {
         ))}
 
         <button onClick={next} disabled={page === maxPage}>
-          →
+          <ChevronRight />
         </button>
       </div>
     </div>

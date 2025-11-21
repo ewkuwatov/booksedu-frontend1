@@ -26,6 +26,13 @@ import {
 
 import { useTranslation } from 'react-i18next'
 import { usePagination } from '../../../hooks/usePagination'
+import {
+  Pencil,
+  Download,
+  Trash,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react'
 
 const emptyForm = {
   title: '',
@@ -149,7 +156,7 @@ export default function AdminLiteratures() {
   return (
     <div style={{ padding: 16 }}>
       <h1>
-        {t('literatures')} — {user.university_name}
+        {t('literatures')}
       </h1>
 
       <button onClick={startAdd}>{t('add')}</button>
@@ -322,16 +329,20 @@ export default function AdminLiteratures() {
                 }}
               </td>
 
-              <td>{l.file_path ? '📄' : '-'}</td>
+              <td>{l.file_path ? t('available') : '-'}</td>
 
               <td>
-                <button onClick={() => startEdit(l)}>{t('edit')}</button>
-                <button onClick={() => onDelete(l.id)}>{t('delete')}</button>
+                <button onClick={() => startEdit(l)}>
+                  <Pencil />
+                </button>
+                <button onClick={() => onDelete(l.id)}>
+                  <Trash />
+                </button>
                 <button
                   disabled={!l.file_path}
                   onClick={() => onDownload(l.id)}
                 >
-                  {t('download')}
+                  <Download />
                 </button>
               </td>
             </tr>
@@ -341,7 +352,7 @@ export default function AdminLiteratures() {
       {/* ПАГИНАЦИЯ */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
-          ←
+          <ChevronLeft />
         </button>
 
         {[...Array(maxPage)].map((_, i) => (
@@ -355,7 +366,7 @@ export default function AdminLiteratures() {
         ))}
 
         <button onClick={next} disabled={page === maxPage}>
-          →
+          <ChevronRight />
         </button>
       </div>
     </div>

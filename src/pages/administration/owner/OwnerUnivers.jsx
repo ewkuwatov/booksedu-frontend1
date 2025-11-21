@@ -11,6 +11,7 @@ import Button from '../../../components/UI/Button'
 import CustomSelect from '../../../components/UI/CustomSelect'
 import { UniverAddress } from '../../../utils/unums'
 import { useTranslation } from 'react-i18next'
+import { Pencil, Trash } from 'lucide-react'
 
 const OwnerUnivers = () => {
   const { t } = useTranslation()
@@ -149,8 +150,12 @@ const OwnerUnivers = () => {
             <div className="univer-header">
               <p>{index + 1}</p>
               <strong style={{ cursor: 'pointer' }}>{u.name}</strong>
-              <Button onClick={() => openEditForm(u)}>{t('edit')}</Button>
-              <Button onClick={() => handlerDelete(u.id)}>{t('delete')}</Button>
+              <Button onClick={() => openEditForm(u)}>
+                <Pencil />
+              </Button>
+              <Button onClick={() => handlerDelete(u.id)}>
+                <Trash />
+              </Button>
             </div>
           </li>
         ))}
