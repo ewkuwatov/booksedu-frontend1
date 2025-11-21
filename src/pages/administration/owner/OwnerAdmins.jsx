@@ -12,6 +12,7 @@ import Input from '../../../components/UI/Input'
 import Button from '../../../components/UI/Button'
 import { useTranslation } from 'react-i18next'
 import { usePagination } from '../../../hooks/usePagination'
+import { ChevronLeft, ChevronRight, Pencil, Trash } from 'lucide-react'
 
 const OwnerAdmins = () => {
   const { t } = useTranslation()
@@ -154,13 +155,13 @@ const OwnerAdmins = () => {
               </td>
               <td>
                 <button className="edit-btn" onClick={() => startEditing(a)}>
-                  {t('edit')}
+                  <Pencil />
                 </button>
                 <button
                   className="delete-btn"
                   onClick={() => handleDeleteAdmin(a.id)}
                 >
-                  {t('delete')}
+                  <Trash />
                 </button>
               </td>
             </tr>
@@ -169,7 +170,7 @@ const OwnerAdmins = () => {
       </table>
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
-          ←
+          <ChevronLeft />
         </button>
 
         {[...Array(maxPage)].map((_, i) => (
@@ -183,7 +184,7 @@ const OwnerAdmins = () => {
         ))}
 
         <button onClick={next} disabled={page === maxPage}>
-          →
+          <ChevronRight />
         </button>
       </div>
     </div>

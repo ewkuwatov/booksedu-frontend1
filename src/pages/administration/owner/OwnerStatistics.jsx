@@ -24,7 +24,7 @@ const OwnerStatistics = () => {
           marginTop: '10px',
         }}
       >
-        {loading ? 'Формируется...' : 'Скачать Excel'}
+        {loading ? 'Формируется...' : 'Excel'}
       </button>
     </div>
   )

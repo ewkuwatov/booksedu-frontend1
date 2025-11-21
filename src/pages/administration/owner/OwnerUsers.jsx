@@ -3,6 +3,7 @@ import { selectUser } from '../../../store'
 import { useEffect } from 'react'
 import { fetchAllUsersThunk } from '../../../features/admins/userSlice'
 import { usePagination } from '../../../hooks/usePagination'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const OwnerUsers = () => {
   const dispatch = useDispatch()
@@ -55,7 +56,7 @@ const OwnerUsers = () => {
       {/* ПАГИНАЦИЯ */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
-          ←
+          <ChevronLeft />
         </button>
 
         {[...Array(maxPage)].map((_, i) => (
@@ -69,7 +70,7 @@ const OwnerUsers = () => {
         ))}
 
         <button onClick={next} disabled={page === maxPage}>
-          →
+          <ChevronRight />
         </button>
       </div>
     </div>

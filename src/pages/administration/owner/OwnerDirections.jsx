@@ -14,6 +14,7 @@ import Input from '../../../components/UI/Input'
 import Button from '../../../components/UI/Button'
 import { useTranslation } from 'react-i18next'
 import { usePagination } from '../../../hooks/usePagination'
+import { Pencil, ChevronLeft, ChevronRight, Trash } from 'lucide-react'
 
 const OwnerDirections = () => {
   const { t } = useTranslation()
@@ -183,9 +184,11 @@ const OwnerDirections = () => {
                 {univers.find((u) => u.id === d.university_id)?.name || '-'}
               </td>
               <td>
-                <button onClick={() => startEditing(d)}>{t('edit')}</button>
+                <button onClick={() => startEditing(d)}>
+                  <Pencil />
+                </button>
                 <button onClick={() => handleDelete(d.id)}>
-                  {t('delete')}
+                  <Trash />
                 </button>
               </td>
             </tr>
@@ -195,7 +198,7 @@ const OwnerDirections = () => {
       {/* ПАГИНАЦИЯ */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
-          ←
+          <ChevronLeft />
         </button>
 
         {[...Array(maxPage)].map((_, i) => (
@@ -209,7 +212,7 @@ const OwnerDirections = () => {
         ))}
 
         <button onClick={next} disabled={page === maxPage}>
-          →
+          <ChevronRight />
         </button>
       </div>
     </div>

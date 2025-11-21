@@ -12,6 +12,7 @@ import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import Input from '../../../components/UI/Input'
 import { usePagination } from '../../../hooks/usePagination'
 import { useTranslation } from 'react-i18next'
+import { ChevronLeft, ChevronRight, Pencil, Trash } from 'lucide-react'
 
 const OwnerKafedras = () => {
   const { t } = useTranslation()
@@ -142,9 +143,9 @@ const OwnerKafedras = () => {
                 {univers.find((u) => u.id === k.university_id)?.name || '-'}
               </td>
               <td>
-                <button onClick={() => startEditing(k)}>{t('edit')}</button>
+                <button onClick={() => startEditing(k)}><Pencil /></button>
                 <button onClick={() => handleDelete(k.id)}>
-                  {t('delete')}
+                  <Trash />
                 </button>
               </td>
             </tr>
@@ -155,7 +156,7 @@ const OwnerKafedras = () => {
       {/* ПАГИНАЦИЯ */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
-          ←
+          <ChevronLeft />
         </button>
 
         {[...Array(maxPage)].map((_, i) => (
@@ -169,7 +170,7 @@ const OwnerKafedras = () => {
         ))}
 
         <button onClick={next} disabled={page === maxPage}>
-          →
+          <ChevronRight />
         </button>
       </div>
     </div>

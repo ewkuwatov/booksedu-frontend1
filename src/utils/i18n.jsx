@@ -92,6 +92,7 @@ i18n.use(initReactI18next).init({
         font: 'Yozuvi',
         year: 'Yil',
         file: 'Fayl',
+        available: 'Mavjud',
         actions: 'Amallar',
         download: 'Yuklab olish',
 
@@ -111,6 +112,8 @@ i18n.use(initReactI18next).init({
 
         region: 'Hudud',
         location: 'Joylashuv',
+
+        exit: 'Chiqish',
       },
     },
 
@@ -195,6 +198,7 @@ i18n.use(initReactI18next).init({
         font: 'Шрифт',
         year: 'Год',
         file: 'Файл',
+        available: 'Имееться',
         actions: 'Действия',
         download: 'Скачать',
 
@@ -215,6 +219,8 @@ i18n.use(initReactI18next).init({
 
         region: 'Область',
         location: 'Локация',
+
+        exit: 'Выход',
       },
     },
 
@@ -298,6 +304,7 @@ i18n.use(initReactI18next).init({
         font: 'Font',
         year: 'Year',
         file: 'File',
+        available: 'Available',
         actions: 'Actions',
         download: 'Download',
 
@@ -318,6 +325,8 @@ i18n.use(initReactI18next).init({
 
         region: 'Region',
         location: 'Location',
+
+        exit: 'Exit',
       },
     },
   },

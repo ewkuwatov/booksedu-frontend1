@@ -11,6 +11,7 @@ import Button from '../../../components/UI/Button'
 import Input from '../../../components/UI/Input'
 import { useTranslation } from 'react-i18next'
 import { usePagination } from '../../../hooks/usePagination'
+import { Pencil, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const AdminKafedra = () => {
   const { t } = useTranslation()
@@ -106,7 +107,7 @@ const AdminKafedra = () => {
               <td>{index + 1}</td>
               <td>{k.name}</td>
               <td>
-                <Button onClick={() => startEditing(k)}>{t('edit')}</Button>
+                <Button onClick={() => startEditing(k)}><Pencil /></Button>
               </td>
             </tr>
           ))}
@@ -115,7 +116,7 @@ const AdminKafedra = () => {
       {/* ПАГИНАЦИЯ */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
-          ←
+          <ChevronLeft />
         </button>
 
         {[...Array(maxPage)].map((_, i) => (
@@ -129,7 +130,7 @@ const AdminKafedra = () => {
         ))}
 
         <button onClick={next} disabled={page === maxPage}>
-          →
+          <ChevronRight />
         </button>
       </div>
     </div>

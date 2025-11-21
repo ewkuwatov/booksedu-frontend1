@@ -18,6 +18,7 @@ import { fetchAllKafedrasThunk } from '../../../features/admins/kafedraSlice'
 import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
 import { useTranslation } from 'react-i18next'
 import { usePagination } from '../../../hooks/usePagination'
+import { Pencil, Trash, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const AdminSubjects = () => {
   const { t } = useTranslation()
@@ -184,12 +185,10 @@ const AdminSubjects = () => {
 
   return (
     <div className="subjects-admin">
-      <h1>
-        📚 {t('subjects')} — {t('university')} ID: {univerId}
-      </h1>
+      <h1>{t('subjects')}</h1>
 
       <button className="primary-btn" onClick={() => setOpenForm(true)}>
-        ➕ {t('add')}
+        {t('add')}
       </button>
 
       {openForm && (
@@ -332,7 +331,7 @@ const AdminSubjects = () => {
                   {editingId === s.id ? (
                     <>
                       <button onClick={() => handleSaveEdit(s.id)}>
-                        💾 {t('save')}
+                        {t('save')}
                       </button>
                       <button
                         onClick={() => {
@@ -340,16 +339,16 @@ const AdminSubjects = () => {
                           setEditData(null)
                         }}
                       >
-                        ❌ {t('cancel')}
+                        {t('cancel')}
                       </button>
                     </>
                   ) : (
                     <>
                       <button onClick={() => startEditing(s)}>
-                        ✏️ {t('edit')}
+                        <Pencil />
                       </button>
                       <button onClick={() => handleDelete(s.id)}>
-                        🗑 {t('delete')}
+                        <Trash />
                       </button>
                     </>
                   )}
@@ -361,7 +360,7 @@ const AdminSubjects = () => {
       {/* ПАГИНАЦИЯ */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
-          ←
+          <ChevronLeft />
         </button>
 
         {[...Array(maxPage)].map((_, i) => (
@@ -375,7 +374,7 @@ const AdminSubjects = () => {
         ))}
 
         <button onClick={next} disabled={page === maxPage}>
-          →
+          <ChevronRight />
         </button>
       </div>
     </div>

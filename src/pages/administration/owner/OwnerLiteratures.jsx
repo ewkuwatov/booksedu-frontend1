@@ -19,6 +19,13 @@ import { fetchAllGetSubjectsThunk } from '../../../features/admins/subjectSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import { useTranslation } from 'react-i18next'
 import { usePagination } from '../../../hooks/usePagination'
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Pencil,
+  Trash,
+} from 'lucide-react'
 
 // enums (должны совпадать со значениями в бэке)
 const LANGUAGE_OPTIONS = ["o'zbek", 'rus', 'qoraqolpoq', 'ingliz']
@@ -428,15 +435,19 @@ export default function OwnerLiteratures() {
                 })()}
               </td>
 
-              <td>{l.file_path ? '✓' : '-'}</td>
+              <td>{l.file_path ? t('available') : '-'}</td>
               <td style={{ display: 'flex', gap: 6 }}>
-                <button onClick={() => startEdit(l)}>{t('edit')}</button>
-                <button onClick={() => onDelete(l.id)}>{t('delete')}</button>
                 <button
                   disabled={!l.file_path}
                   onClick={() => onDownload(l.id)}
                 >
-                  {t('download')}
+                  <Download />
+                </button>
+                <button onClick={() => startEdit(l)}>
+                  <Pencil />
+                </button>
+                <button onClick={() => onDelete(l.id)}>
+                  <Trash />
                 </button>
               </td>
             </tr>
@@ -444,21 +455,21 @@ export default function OwnerLiteratures() {
           {/* ПАГИНАЦИЯ */}
           <div className="pagination">
             <button onClick={prev} disabled={page === 1}>
-              ←
+              <ChevronLeft />
             </button>
 
             {[...Array(maxPage)].map((_, i) => (
               <button
                 key={i}
                 onClick={() => goTo(i + 1)}
-                className={page === i + 1 ? 'active' : ''}
+                className={`pageBtn ${page === i + 1 ? 'active' : ''}`}
               >
                 {i + 1}
               </button>
             ))}
 
             <button onClick={next} disabled={page === maxPage}>
-              →
+              <ChevronRight />
             </button>
           </div>
           {!loading && !filtered.length && (
