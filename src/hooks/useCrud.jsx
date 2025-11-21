@@ -1,3 +1,4 @@
+// hooks/useCrud.js
 import { useEffect, useState, useCallback } from 'react'
 
 export function useCrud({ fetchAll, add, update, remove, initialForm }) {
@@ -19,17 +20,35 @@ export function useCrud({ fetchAll, add, update, remove, initialForm }) {
     setEditingId(null)
   }
 
+  // ---------- FIXED ----------
   const startEditing = (item) => {
     setEditingId(item.id)
-    setForm(item)
+
+    // преобразуем 1 запись в массив courses
+    setForm({
+      number: item.number,
+      name: item.name,
+      university_id: item.university_id,
+      courses: [
+        {
+          course: item.course,
+          students: item.student_count,
+        },
+      ],
+    })
+
     setOpenForm(true)
   }
+  // ----------------------------
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (editingId) await updateMemo(editingId, form)
-    else await addMemo(form)
+    if (editingId) {
+      await updateMemo(editingId, form)
+    } else {
+      await addMemo(form)
+    }
 
     await fetchAllMemo()
     resetForm()

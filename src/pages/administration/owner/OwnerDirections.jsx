@@ -5,7 +5,6 @@ import {
   fetchAddDirectionThunk,
   fetchAllDirectionThunk,
   fetchDeleteDirectionThunk,
-  fetchUpdateDirectionThunk,
 } from '../../../features/admins/directionSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 
@@ -22,7 +21,7 @@ const OwnerDirections = () => {
   const { items: directions } = useSelector(selectDirection)
   const { items: univers } = useSelector(selectUniver)
 
-  // ---- CRUD ХУК ----
+  // ---- CRUD ----
   const {
     form,
     setForm,
@@ -30,21 +29,57 @@ const OwnerDirections = () => {
     setOpenForm,
     editingId,
     startEditing,
-    handleSubmit,
     handleDelete,
     resetForm,
+    handleSubmit: baseHandleSubmit,
   } = useCrud({
     initialForm: {
       number: '',
       name: '',
-      course: 1,
-      student_count: null,
+      courses: [], // [{course, students}]
       university_id: null,
     },
+
     fetchAll: () => dispatch(fetchAllDirectionThunk()).unwrap(),
-    add: (data) => dispatch(fetchAddDirectionThunk(data)).unwrap(),
-    update: (id, data) =>
-      dispatch(fetchUpdateDirectionThunk({ id, updated: data })).unwrap(),
+
+    // CREATE MULTIPLE
+    add: async (data) => {
+      const { number, name, university_id, courses } = data
+
+      for (const item of courses) {
+        await dispatch(
+          fetchAddDirectionThunk({
+            number,
+            name,
+            university_id,
+            course: item.course,
+            student_count:
+              item.students === null ? null : Number(item.students),
+          })
+        ).unwrap()
+      }
+    },
+
+    // UPDATE = delete old → create new
+    update: async (id, data) => {
+      const { number, name, university_id, courses } = data
+
+      await dispatch(fetchDeleteDirectionThunk(id)).unwrap()
+
+      for (const item of courses) {
+        await dispatch(
+          fetchAddDirectionThunk({
+            number,
+            name,
+            university_id,
+            course: item.course,
+            student_count:
+              item.students === null ? null : Number(item.students),
+          })
+        ).unwrap()
+      }
+    },
+
     remove: (id) => dispatch(fetchDeleteDirectionThunk(id)).unwrap(),
   })
 
@@ -58,11 +93,15 @@ const OwnerDirections = () => {
     ? directions.filter((d) => d.university_id === Number(filterUniver))
     : directions
 
-  // === ПАГИНАЦИЯ ===
   const { page, maxPage, currentData, next, prev, goTo } = usePagination(
     filtered,
     10
   )
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    baseHandleSubmit(e)
+  }
 
   return (
     <div className="directions-container">
@@ -76,7 +115,7 @@ const OwnerDirections = () => {
         {t('add')}
       </Button>
 
-      {/* ФИЛЬТР */}
+      {/* FILTER */}
       <div className="filter-block">
         <select
           value={filterUniver}
@@ -91,6 +130,7 @@ const OwnerDirections = () => {
         </select>
       </div>
 
+      {/* FORM */}
       {openForm && (
         <div className="modal-overlay">
           <form className="directions-form" onSubmit={handleSubmit}>
@@ -106,26 +146,72 @@ const OwnerDirections = () => {
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
 
-            <select
-              value={form.course}
-              onChange={(e) =>
-                setForm({ ...form, course: Number(e.target.value) })
-              }
-            >
-              <option value={1}>1 {t('course')}</option>
-              <option value={2}>2 {t('course')}</option>
-              <option value={3}>3 {t('course')}</option>
-              <option value={4}>4 {t('course')}</option>
-            </select>
+            {/* COURSES */}
+            <div style={{ marginTop: '10px' }}>
+              {[1, 2, 3, 4].map((course) => {
+                const selected = form.courses.some((c) => c.course === course)
+                return (
+                  <div key={course} style={{ marginBottom: '12px' }}>
+                    <label style={{ display: 'flex', gap: '10px' }}>
+                      <input
+                        type="checkbox"
+                        checked={selected}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setForm({
+                              ...form,
+                              courses: [
+                                ...form.courses,
+                                { course, students: null },
+                              ],
+                            })
+                          } else {
+                            setForm({
+                              ...form,
+                              courses: form.courses.filter(
+                                (c) => c.course !== course
+                              ),
+                            })
+                          }
+                        }}
+                      />
+                      <span>{course}-курс</span>
 
-            <Input
-              type="number"
-              placeholder={t('students_count')}
-              value={form.student_count ?? ''}
-              onChange={(e) =>
-                setForm({ ...form, student_count: Number(e.target.value) })
-              }
-            />
+                      {selected && (
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          placeholder={t('students_count')}
+                          value={
+                            form.courses.find((c) => c.course === course)
+                              ?.students ?? ''
+                          }
+                          onChange={(e) => {
+                            let value = e.target.value
+                            value = value.replace(/\D+/g, '')
+                            value = value.replace(/^0+/, '')
+
+                            setForm({
+                              ...form,
+                              courses: form.courses.map((c) =>
+                                c.course === course
+                                  ? {
+                                      ...c,
+                                      students:
+                                        value === '' ? null : Number(value),
+                                    }
+                                  : c
+                              ),
+                            })
+                          }}
+                          style={{ width: '120px' }}
+                        />
+                      )}
+                    </label>
+                  </div>
+                )
+              })}
+            </div>
 
             <select
               value={form.university_id ?? ''}
@@ -160,6 +246,7 @@ const OwnerDirections = () => {
         </div>
       )}
 
+      {/* TABLE */}
       <table className="directions-table">
         <thead>
           <tr>
@@ -195,13 +282,14 @@ const OwnerDirections = () => {
           ))}
         </tbody>
       </table>
-      {/* ПАГИНАЦИЯ */}
+
+      {/* PAGINATION */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
           <ChevronLeft />
         </button>
 
-        {[...Array(maxPage)].map((_, i) => (
+        {Array.from({ length: maxPage }).map((_, i) => (
           <button
             key={i}
             onClick={() => goTo(i + 1)}
