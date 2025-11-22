@@ -18,31 +18,32 @@ export default function Login() {
   }
 
   return (
-    <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
-      <form
-        onSubmit={onSubmit}
-        style={{ width: 360, display: 'grid', gap: 12 }}
-      >
-        <h2>Вход</h2>
-        <input
-          placeholder="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          placeholder="Пароль"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button disabled={status === 'loading'}>
-          {status === 'loading' ? 'Входим...' : 'Войти'}
-        </button>
-        {error && <div style={{ color: 'crimson' }}>{error}</div>}
-      </form>
+    <div className="loginPage">
+      <div className="loginCardWrapper">
+        <div className="loginCard">
+          <form onSubmit={onSubmit} className="loginForm">
+            <h2>Вход</h2>
+            <input
+              placeholder="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              placeholder="Пароль"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button disabled={status === 'loading'}>
+              {status === 'loading' ? 'Входим...' : 'Войти'}
+            </button>
+            {error && <div style={{ color: 'crimson' }}>{error}</div>}
+          </form>
+        </div>
+      </div>
     </div>
   )
 }
