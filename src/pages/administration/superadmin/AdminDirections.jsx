@@ -4,15 +4,16 @@ import { useEffect, useState } from 'react'
 import {
   fetchAddDirectionThunk,
   fetchAllDirectionThunk,
-  fetchUpdateDirectionThunk,
+  fetchDeleteDirectionThunk,
 } from '../../../features/admins/directionSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
+
 import Input from '../../../components/UI/Input'
-import { useCrud } from '../../../hooks/useCrud'
 import Button from '../../../components/UI/Button'
+import { useCrud } from '../../../hooks/useCrud'
 import { useTranslation } from 'react-i18next'
 import { usePagination } from '../../../hooks/usePagination'
-import { Pencil, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Pencil, ChevronLeft, ChevronRight, Trash } from 'lucide-react'
 
 const AdminDirections = () => {
   const { t } = useTranslation()
@@ -20,8 +21,10 @@ const AdminDirections = () => {
   const { items: directions } = useSelector(selectDirection)
   const { items: univers } = useSelector(selectUniver)
   const { user } = useSelector(selectAuth)
+
   const [filtered, setFiltered] = useState([])
 
+  // ---- CRUD ----
   const {
     form,
     setForm,
@@ -29,22 +32,61 @@ const AdminDirections = () => {
     setOpenForm,
     editingId,
     startEditing,
-    handleSubmit,
+    handleDelete,
     resetForm,
+    handleSubmit: baseHandleSubmit,
   } = useCrud({
     initialForm: {
       number: '',
       name: '',
-      course: 1,
-      student_count: null,
+      courses: [], // [{course, students}]
       university_id: user?.university_id ?? null,
     },
+
     fetchAll: () => dispatch(fetchAllDirectionThunk()).unwrap(),
-    add: (data) => dispatch(fetchAddDirectionThunk(data)).unwrap(),
-    update: (id, data) =>
-      dispatch(fetchUpdateDirectionThunk({ id, updated: data })).unwrap(),
+
+    // CREATE MULTIPLE
+    add: async (data) => {
+      const { number, name, university_id, courses } = data
+
+      for (const item of courses) {
+        await dispatch(
+          fetchAddDirectionThunk({
+            number,
+            name,
+            university_id,
+            course: item.course,
+            student_count:
+              item.students === null ? null : Number(item.students),
+          })
+        ).unwrap()
+      }
+    },
+
+    // UPDATE = delete old → create new
+    update: async (id, data) => {
+      const { number, name, university_id, courses } = data
+
+      await dispatch(fetchDeleteDirectionThunk(id)).unwrap()
+
+      for (const item of courses) {
+        await dispatch(
+          fetchAddDirectionThunk({
+            number,
+            name,
+            university_id,
+            course: item.course,
+            student_count:
+              item.students === null ? null : Number(item.students),
+          })
+        ).unwrap()
+      }
+    },
+
+    remove: (id) => dispatch(fetchDeleteDirectionThunk(id)).unwrap(),
   })
 
+  // Load data
   useEffect(() => {
     dispatch(fetchAllDirectionThunk()).unwrap()
     dispatch(fetchAllUniverThunk()).unwrap()
@@ -58,15 +100,21 @@ const AdminDirections = () => {
     }
   }, [directions, user])
 
-  // === ПАГИНАЦИЯ ===
+  // Pagination
   const { page, maxPage, currentData, next, prev, goTo } = usePagination(
     filtered,
     10
   )
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    baseHandleSubmit(e)
+  }
+
   return (
-    <div>
+    <div className="directions-container">
       <h1>{t('directions')}</h1>
+
       <Button
         onClick={() => {
           resetForm()
@@ -76,38 +124,88 @@ const AdminDirections = () => {
         {t('add')}
       </Button>
 
+      {/* FORM */}
       {openForm && (
         <div className="modal-overlay">
           <form className="directions-form" onSubmit={handleSubmit}>
             <Input
+              placeholder={t('cipher')}
               value={form.number}
               onChange={(e) => setForm({ ...form, number: e.target.value })}
-              placeholder={t('cipher')}
-            />
-            <Input
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder={t('directions_name')}
             />
 
-            <select
-              value={form.course}
-              onChange={(e) =>
-                setForm({ ...form, course: Number(e.target.value) })
-              }
-            >
-              <option value={1}>1 {t('course')}</option>
-              <option value={2}>2 {t('course')}</option>
-              <option value={3}>3 {t('course')}</option>
-              <option value={4}>4 {t('course')}</option>
-            </select>
             <Input
-              value={form.student_count || ''}
-              onChange={(e) =>
-                setForm({ ...form, student_count: Number(e.target.value) })
-              }
-              placeholder={t('students_count')}
+              placeholder={t('directions_name')}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
+
+            {/* COURSES */}
+            <div style={{ marginTop: '10px' }}>
+              {[1, 2, 3, 4].map((course) => {
+                const selected = form.courses.some((c) => c.course === course)
+                return (
+                  <div key={course} style={{ marginBottom: '12px' }}>
+                    <label style={{ display: 'flex', gap: '10px' }}>
+                      <input
+                        type="checkbox"
+                        checked={selected}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setForm({
+                              ...form,
+                              courses: [
+                                ...form.courses,
+                                { course, students: null },
+                              ],
+                            })
+                          } else {
+                            setForm({
+                              ...form,
+                              courses: form.courses.filter(
+                                (c) => c.course !== course
+                              ),
+                            })
+                          }
+                        }}
+                      />
+                      <span>{course}-курс</span>
+
+                      {selected && (
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          placeholder={t('students_count')}
+                          value={
+                            form.courses.find((c) => c.course === course)
+                              ?.students ?? ''
+                          }
+                          onChange={(e) => {
+                            let value = e.target.value
+                            value = value.replace(/\D+/g, '')
+                            value = value.replace(/^0+/, '')
+
+                            setForm({
+                              ...form,
+                              courses: form.courses.map((c) =>
+                                c.course === course
+                                  ? {
+                                      ...c,
+                                      students:
+                                        value === '' ? null : Number(value),
+                                    }
+                                  : c
+                              ),
+                            })
+                          }}
+                          style={{ width: '120px' }}
+                        />
+                      )}
+                    </label>
+                  </div>
+                )
+              })}
+            </div>
 
             <div className="form-actions">
               <Button type="submit">{editingId ? t('save') : t('add')}</Button>
@@ -127,6 +225,7 @@ const AdminDirections = () => {
 
       {filtered.length === 0 && <p>Нет направлений</p>}
 
+      {/* TABLE */}
       <table className="directions-table">
         <thead>
           <tr>
@@ -154,18 +253,22 @@ const AdminDirections = () => {
                 <button onClick={() => startEditing(d)}>
                   <Pencil />
                 </button>
+                <button onClick={() => handleDelete(d.id)}>
+                  <Trash />
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {/* ПАГИНАЦИЯ */}
+
+      {/* PAGINATION */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
           <ChevronLeft />
         </button>
 
-        {[...Array(maxPage)].map((_, i) => (
+        {Array.from({ length: maxPage }).map((_, i) => (
           <button
             key={i}
             onClick={() => goTo(i + 1)}
