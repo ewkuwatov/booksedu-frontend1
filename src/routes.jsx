@@ -19,6 +19,8 @@ import AdminDirections from './pages/administration/superadmin/AdminDirections'
 import AdminKafedra from './pages/administration/superadmin/AdminKafedra'
 import AdminSubjects from './pages/administration/superadmin/AdminSubjects'
 import AdminLiteratures from './pages/administration/superadmin/AdminLiteratures'
+import InProgress from './pages/InProgress'
+import PagesLayout from './layouts/PagesLayout'
 
 export const router = createBrowserRouter([
   // Публичные страницы
@@ -32,6 +34,11 @@ export const router = createBrowserRouter([
       },
 
       { path: '/login', element: <Login /> },
+
+      {
+        element: <PagesLayout />,
+        children: [{ path: '/InProcess', element: <InProgress /> }],
+      },
 
       // Приватные
       {

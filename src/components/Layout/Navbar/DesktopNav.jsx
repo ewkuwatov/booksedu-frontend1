@@ -26,11 +26,11 @@ const DesktopNav = ({ logo, user, handleLogout }) => {
 
       {user && (
         <div className="navMenu">
-          <Link to="/universities">{t('universities')}</Link>
-          <Link to="/in-process">{t('directions')}</Link>
-          <Link to="/news">{t('news')}</Link>
-          <Link to="/online-tests">{t('online_test')}</Link>
-          <Link to="/articles">{t('articles')}</Link>
+          <Link to="/InProcess">{t('universities')}</Link>
+          <Link to="/InProcess">{t('directions')}</Link>
+          <Link to="/InProcess">{t('news')}</Link>
+          <Link to="/InProcess">{t('online_test')}</Link>
+          <Link to="/InProcess">{t('articles')}</Link>
         </div>
       )}
 
