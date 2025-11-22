@@ -6,3 +6,5 @@
 @import './styles/UniversitiesUser.css';
 @import './styles/Universities.css';
 @import './styles/Footer.css';
+
+@import './styles/register/Login.css'
