@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useMemo, useState } from 'react'
-
+import { useEffect, useState } from 'react'
 import {
   selectSubject,
   selectUniver,
@@ -12,6 +11,7 @@ import {
   fetchAllGetSubjectsThunk,
   fetchDeleteSubjectsThunk,
   fetchAddSubjectsThunkBulk,
+  fetchUpdateSubjectsThunk,
 } from '../../../features/admins/subjectSlice'
 
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
@@ -19,7 +19,7 @@ import { fetchAllKafedrasThunk } from '../../../features/admins/kafedraSlice'
 import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
 
 import { usePagination } from '../../../hooks/usePagination'
-import { ChevronLeft, ChevronRight, Trash } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Trash, Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 const OwnerSubjects = () => {
@@ -31,8 +31,8 @@ const OwnerSubjects = () => {
   const { items: kafedras } = useSelector(selectKafedra)
   const { items: directions } = useSelector(selectDirection)
 
-  const [filterUniver, setFilterUniver] = useState('')
   const [openForm, setOpenForm] = useState(false)
+  const [editId, setEditId] = useState(null)
   const [directionSearch, setDirectionSearch] = useState('')
 
   const [subjectsForm, setSubjectsForm] = useState([
@@ -41,7 +41,6 @@ const OwnerSubjects = () => {
       university_id: null,
       kafedra_id: null,
       direction_ids: [],
-      error: false,
     },
   ])
 
@@ -52,56 +51,11 @@ const OwnerSubjects = () => {
     dispatch(fetchAllGetSubjectsThunk())
   }, [dispatch])
 
-  /* ============================
-     FILTERED DATA
-  ============================ */
-
-  const filteredSubjects = useMemo(() => {
-    return filterUniver
-      ? subjects.filter((s) => s.university_id === Number(filterUniver))
-      : subjects
-  }, [subjects, filterUniver])
-
-  const filteredDirections = useMemo(() => {
-    const q = directionSearch.toLowerCase()
-    return directions.filter(
-      (d) => d.name.toLowerCase().includes(q) || String(d.course).includes(q),
-    )
-  }, [directions, directionSearch])
-
-  /* ============================
-     HELPERS
-  ============================ */
-
-  const checkDuplicate = (name, university_id, kafedra_id) => {
-    return subjects.some(
-      (s) =>
-        s.name.trim().toLowerCase() === name.trim().toLowerCase() &&
-        s.university_id === university_id &&
-        s.kafedra_id === kafedra_id,
-    )
-  }
+  /* ================= HELPERS ================= */
 
   const updateField = (index, field, value) => {
     setSubjectsForm((prev) =>
-      prev.map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              [field]: value,
-              error:
-                field !== 'name' &&
-                field !== 'kafedra_id' &&
-                field !== 'university_id'
-                  ? item.error
-                  : checkDuplicate(
-                      field === 'name' ? value : item.name,
-                      field === 'university_id' ? value : item.university_id,
-                      field === 'kafedra_id' ? value : item.kafedra_id,
-                    ),
-            }
-          : item,
-      ),
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
     )
   }
 
@@ -120,29 +74,39 @@ const OwnerSubjects = () => {
     )
   }
 
-  const addFormRow = () => {
-    setSubjectsForm((prev) => [
-      ...prev,
+  const handleEdit = (subject) => {
+    setSubjectsForm([
       {
-        name: '',
-        university_id: null,
-        kafedra_id: null,
-        direction_ids: [],
-        error: false,
+        name: subject.name,
+        university_id: subject.university_id,
+        kafedra_id: subject.kafedra_id,
+        direction_ids: subject.direction_ids || [],
       },
     ])
+    setEditId(subject.id)
+    setOpenForm(true)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     const valid = subjectsForm.filter(
-      (s) => s.name && s.university_id && s.kafedra_id && !s.error,
+      (s) => s.name && s.university_id && s.kafedra_id,
     )
 
-    if (!valid.length) return alert('Исправьте ошибки')
+    if (!valid.length) return alert(t('no_data'))
 
-    await dispatch(fetchAddSubjectsThunkBulk(valid))
+    if (editId) {
+      await dispatch(
+        fetchUpdateSubjectsThunk({
+          id: editId,
+          updated: valid[0],
+        }),
+      )
+    } else {
+      await dispatch(fetchAddSubjectsThunkBulk(valid))
+    }
+
     await dispatch(fetchAllGetSubjectsThunk())
 
     setSubjectsForm([
@@ -151,10 +115,10 @@ const OwnerSubjects = () => {
         university_id: null,
         kafedra_id: null,
         direction_ids: [],
-        error: false,
       },
     ])
 
+    setEditId(null)
     setOpenForm(false)
   }
 
@@ -163,19 +127,17 @@ const OwnerSubjects = () => {
   }
 
   const { page, maxPage, currentData, next, prev, goTo } = usePagination(
-    filteredSubjects,
+    subjects,
     10,
   )
 
-  /* ============================
-     JSX
-  ============================ */
+  /* ================= JSX ================= */
 
   return (
     <div className="subjects-admin">
-      <h1>📚 Subjects</h1>
+      <h1>📚 {t('subjects')}</h1>
 
-      <button onClick={() => setOpenForm(true)}>Добавить</button>
+      <button onClick={() => setOpenForm(true)}>{t('add')}</button>
 
       {openForm && (
         <div className="modal-overlay">
@@ -185,14 +147,14 @@ const OwnerSubjects = () => {
                 (k) => k.university_id === subj.university_id,
               )
 
-              const availableDirections = filteredDirections.filter(
+              const availableDirections = directions.filter(
                 (d) => d.university_id === subj.university_id,
               )
 
               return (
                 <div key={index} className="subject-item">
                   <input
-                    placeholder="Название"
+                    placeholder={t('subject')}
                     value={subj.name}
                     onChange={(e) => updateField(index, 'name', e.target.value)}
                   />
@@ -207,7 +169,7 @@ const OwnerSubjects = () => {
                       )
                     }
                   >
-                    <option value="">Университет</option>
+                    <option value="">{t('university')}</option>
                     {univers.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.name}
@@ -217,12 +179,11 @@ const OwnerSubjects = () => {
 
                   <select
                     value={subj.kafedra_id ?? ''}
-                    disabled={!subj.university_id}
                     onChange={(e) =>
                       updateField(index, 'kafedra_id', Number(e.target.value))
                     }
                   >
-                    <option value="">Кафедра</option>
+                    <option value="">{t('kafedra')}</option>
                     {availableKafedras.map((k) => (
                       <option key={k.id} value={k.id}>
                         {k.name}
@@ -232,29 +193,34 @@ const OwnerSubjects = () => {
 
                   <div className="direction-wrapper">
                     <input
-                      type="text"
-                      placeholder="🔍 Поиск направления..."
+                      className="direction-search"
+                      placeholder={t('directions')}
                       value={directionSearch}
                       onChange={(e) => setDirectionSearch(e.target.value)}
-                      className="direction-search"
                     />
 
                     <div className="direction-list">
-                      {availableDirections.map((d) => (
-                        <label key={d.id} className="direction-item">
-                          <input
-                            type="checkbox"
-                            checked={subj.direction_ids.includes(d.id)}
-                            onChange={() => toggleDirection(index, d.id)}
-                          />
-                          <span>
-                            {d.name} <b>({d.course} курс)</b>
-                          </span>
-                        </label>
-                      ))}
+                      {availableDirections
+                        .filter((d) =>
+                          d.name
+                            .toLowerCase()
+                            .includes(directionSearch.toLowerCase()),
+                        )
+                        .map((d) => (
+                          <label key={d.id} className="direction-item">
+                            <input
+                              type="checkbox"
+                              checked={subj.direction_ids.includes(d.id)}
+                              onChange={() => toggleDirection(index, d.id)}
+                            />
+                            <span>
+                              {d.name} ({d.course})
+                            </span>
+                          </label>
+                        ))}
 
                       {!availableDirections.length && (
-                        <div className="empty">Ничего не найдено</div>
+                        <div className="empty">{t('no_data')}</div>
                       )}
                     </div>
                   </div>
@@ -262,12 +228,16 @@ const OwnerSubjects = () => {
               )
             })}
 
-            <button type="button" onClick={addFormRow}>
-              + Добавить ещё
-            </button>
-            <button type="submit">Сохранить</button>
-            <button type="button" onClick={() => setOpenForm(false)}>
-              Отмена
+            <button type="submit">{editId ? t('save') : t('add')}</button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setOpenForm(false)
+                setEditId(null)
+              }}
+            >
+              {t('cancel')}
             </button>
           </form>
         </div>
@@ -277,11 +247,11 @@ const OwnerSubjects = () => {
         <thead>
           <tr>
             <th>#</th>
-            <th>Предмет</th>
-            <th>Кафедра</th>
-            <th>Университет</th>
-            <th>Направления</th>
-            <th></th>
+            <th>{t('subject')}</th>
+            <th>{t('kafedra')}</th>
+            <th>{t('university')}</th>
+            <th>{t('directions')}</th>
+            <th>{t('actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -289,24 +259,19 @@ const OwnerSubjects = () => {
             <tr key={s.id}>
               <td>{i + 1}</td>
               <td>{s.name}</td>
-              <td>
-                {kafedras.find((k) => k.id === s.kafedra_id)?.name || '-'}
-              </td>
-              <td>
-                {univers.find((u) => u.id === s.university_id)?.name || '-'}
-              </td>
+              <td>{kafedras.find((k) => k.id === s.kafedra_id)?.name}</td>
+              <td>{univers.find((u) => u.id === s.university_id)?.name}</td>
               <td>
                 {(s.direction_ids || [])
-                  .map((id) => {
-                    const d = directions.find((x) => x.id === id)
-                    return d ? `${d.name} (${d.course})` : null
-                  })
-                  .filter(Boolean)
+                  .map((id) => directions.find((d) => d.id === id)?.name)
                   .join(', ')}
               </td>
-              <td>
+              <td style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => handleEdit(s)}>
+                  <Pencil size={18} />
+                </button>
                 <button onClick={() => handleDelete(s.id)}>
-                  <Trash />
+                  <Trash size={18} />
                 </button>
               </td>
             </tr>

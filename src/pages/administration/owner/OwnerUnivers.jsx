@@ -35,8 +35,8 @@ const OwnerUnivers = () => {
   }, [dispatch])
 
   const addressOptions = Object.entries(UniverAddress).map(([key, value]) => ({
-    value: key, // в базу идёт ключ
-    label: value, // в UI показываем value
+    value: key,
+    label: value,
   }))
 
   const resetForm = () => {
@@ -51,13 +51,15 @@ const OwnerUnivers = () => {
     setEditingId(null)
   }
 
-  const openAddForm = () => {
-    resetForm()
-    setShowForm(true)
-  }
-
   const openEditForm = (u) => {
-    setForm({ ...u })
+    setForm({
+      name: u.name || '',
+      description: u.description || '',
+      address: u.address || '',
+      phone: u.phone || '',
+      email: u.email || '',
+      location: u.location || '',
+    })
     setEditingId(u.id)
     setShowForm(true)
   }
@@ -65,56 +67,71 @@ const OwnerUnivers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    if (!form.name.trim()) return alert('Name is required')
+
     if (editingId) {
       await dispatch(
-        fetchUpdateUnvierThunk({ id: editingId, updated: form })
+        fetchUpdateUnvierThunk({
+          id: editingId,
+          updated: form,
+        }),
       ).unwrap()
     } else {
       await dispatch(fetchAddUnvierThunk(form)).unwrap()
     }
 
-    await dispatch(fetchAllUniverThunk()).unwrap()
-
+    await dispatch(fetchAllUniverThunk())
     resetForm()
     setShowForm(false)
   }
 
   const handlerDelete = async (id) => {
     await dispatch(fetchDeleteUniverThunk(id)).unwrap()
-    await dispatch(fetchAllUniverThunk()).unwrap()
+    await dispatch(fetchAllUniverThunk())
   }
 
   return (
     <div className="universities-admin">
       <h1>{t('universities')}</h1>
 
-      <Button className="toggle-form-btn" onClick={openAddForm}>
-        {t('add')}
-      </Button>
+      <Button onClick={() => setShowForm(true)}>{t('add')}</Button>
 
       {showForm && (
         <div className="modal-overlay">
           <div className="modal">
-            <form onSubmit={handleSubmit} className="univer-form">
-              {/* Остальные поля */}
-              {[
-                t('name'),
-                t('description'),
-                t('phone'),
-                t('email'),
-                t('location'),
-              ].map((field) => (
-                <input
-                  key={field}
-                  placeholder={field}
-                  value={form[field]}
-                  onChange={(e) =>
-                    setForm({ ...form, [field]: e.target.value })
-                  }
-                  style={{ display: 'block', marginBottom: 8 }}
-                />
-              ))}
-              {/* ✅ Кастомный select */}
+            <form onSubmit={handleSubmit}>
+              <input
+                placeholder={t('name')}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+
+              <input
+                placeholder={t('description')}
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+              />
+
+              <input
+                placeholder={t('phone')}
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              />
+
+              <input
+                placeholder={t('email')}
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+
+              <input
+                placeholder={t('location')}
+                value={form.location}
+                onChange={(e) => setForm({ ...form, location: e.target.value })}
+              />
+
               <CustomSelect
                 value={form.address}
                 onChange={(v) => setForm({ ...form, address: v })}
@@ -144,19 +161,16 @@ const OwnerUnivers = () => {
       {loading && <p>Загрузка...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      <ul className="univer-list">
-        {items.map((u, index) => (
-          <li key={u.id} style={{ marginBottom: 10 }}>
-            <div className="univer-header">
-              <p>{index + 1}</p>
-              <strong style={{ cursor: 'pointer' }}>{u.name}</strong>
-              <Button onClick={() => openEditForm(u)}>
-                <Pencil />
-              </Button>
-              <Button onClick={() => handlerDelete(u.id)}>
-                <Trash />
-              </Button>
-            </div>
+      <ul>
+        {items.map((u, i) => (
+          <li key={u.id}>
+            {i + 1}. {u.name}
+            <Button onClick={() => openEditForm(u)}>
+              <Pencil />
+            </Button>
+            <Button onClick={() => handlerDelete(u.id)}>
+              <Trash />
+            </Button>
           </li>
         ))}
       </ul>
