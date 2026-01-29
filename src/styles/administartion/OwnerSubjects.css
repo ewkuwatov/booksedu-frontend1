@@ -1,0 +1,44 @@
+.direction-wrapper {
+  margin-top: 10px;
+}
+
+.direction-search {
+  width: 100%;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.direction-list {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px;
+  background: #fafafa;
+}
+
+.direction-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.direction-item:hover {
+  background: #e8f4ff;
+}
+
+.direction-item input {
+  cursor: pointer;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  padding: 10px;
+}
