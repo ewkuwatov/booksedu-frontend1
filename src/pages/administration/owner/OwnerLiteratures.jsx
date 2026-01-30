@@ -14,7 +14,6 @@ import {
 
 import { selectDirection, selectSubject, selectUniver } from '../../../store'
 import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
-
 import { fetchAllGetSubjectsThunk } from '../../../features/admins/subjectSlice'
 import { fetchAllUniverThunk } from '../../../features/admins/univerSlice'
 import { useTranslation } from 'react-i18next'
@@ -27,7 +26,7 @@ import {
   Trash,
 } from 'lucide-react'
 
-// enums (должны совпадать со значениями в бэке)
+// enums
 const LANGUAGE_OPTIONS = ["o'zbek", 'rus', 'qoraqolpoq', 'ingliz']
 const FONT_OPTIONS = ['kirill', 'lotin', 'ingliz']
 const CONDITION_OPTIONS = ['Zamon talabiga mos', 'Zamon talabiga mos emas']
@@ -49,12 +48,11 @@ const emptyForm = {
   usage_status: 'Fan dasturida foydalaniladi',
   image: '',
   file_path: '',
-
+  file_path_2: '',
   subject_id: null,
   university_id: null,
-
-  // для multipart
   file: null,
+  file_2: null,
 }
 
 export default function OwnerLiteratures() {
@@ -70,7 +68,7 @@ export default function OwnerLiteratures() {
   const [openForm, setOpenForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [form, setForm] = useState(emptyForm)
-  const [useFileMode, setUseFileMode] = useState(false) // JSON или multipart
+  const [useFileMode, setUseFileMode] = useState(false)
 
   useEffect(() => {
     dispatch(fetchAllUniverThunk()).unwrap()
@@ -113,9 +111,11 @@ export default function OwnerLiteratures() {
       usage_status: item.usage_status,
       image: item.image ?? '',
       file_path: item.file_path ?? '',
+      file_path_2: item.file_path_2 ?? '',
       subject_id: item.subject_id ?? null,
       university_id: item.university_id ?? null,
       file: null,
+      file_2: null,
     })
     setOpenForm(true)
   }
@@ -140,22 +140,26 @@ export default function OwnerLiteratures() {
       return
 
     if (editingId) {
-      if (useFileMode && form.file) {
+      if (useFileMode && (form.file || form.file_2)) {
         await dispatch(
           updateLiteratureUploadThunk({
             id: editingId,
-            updated: { ...payload, file: form.file },
-          })
+            updated: { ...payload, file: form.file, file_2: form.file_2 },
+          }),
         ).unwrap()
       } else {
         await dispatch(
-          updateLiteratureThunk({ id: editingId, updated: payload })
+          updateLiteratureThunk({ id: editingId, updated: payload }),
         ).unwrap()
       }
     } else {
-      if (useFileMode && form.file) {
+      if (useFileMode && (form.file || form.file_2)) {
         await dispatch(
-          createLiteratureUploadThunk({ ...payload, file: form.file })
+          createLiteratureUploadThunk({
+            ...payload,
+            file: form.file,
+            file_2: form.file_2,
+          }),
         ).unwrap()
       } else {
         await dispatch(createLiteratureThunk(payload)).unwrap()
@@ -172,14 +176,13 @@ export default function OwnerLiteratures() {
     await dispatch(deleteLiteratureThunk(id)).unwrap()
   }
 
-  const onDownload = async (id) => {
-    await dispatch(downloadLiteratureFileThunk(id)).unwrap()
+  const onDownload = async (id, fileNumber = 1) => {
+    await dispatch(downloadLiteratureFileThunk({ id, fileNumber })).unwrap()
   }
 
-  // === ПАГИНАЦИЯ ===
   const { page, maxPage, currentData, next, prev, goTo } = usePagination(
     filtered,
-    10
+    10,
   )
 
   return (
@@ -275,7 +278,6 @@ export default function OwnerLiteratures() {
               value={form.year}
               onChange={(e) => setForm({ ...form, year: e.target.value })}
             />
-
             <input
               type="number"
               placeholder={t('printed_count')}
@@ -329,10 +331,7 @@ export default function OwnerLiteratures() {
             <select
               value={form.subject_id ?? ''}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  subject_id: Number(e.target.value) || null,
-                })
+                setForm({ ...form, subject_id: Number(e.target.value) || null })
               }
             >
               <option value="">{t('subjects')}</option>
@@ -340,7 +339,7 @@ export default function OwnerLiteratures() {
                 .filter(
                   (s) =>
                     !form.university_id ||
-                    s.university_id === form.university_id
+                    s.university_id === form.university_id,
                 )
                 .map((s) => (
                   <option key={s.id} value={s.id}>
@@ -358,12 +357,18 @@ export default function OwnerLiteratures() {
                 />{' '}
                 {t('attach_file')}
               </label>
-
               <input
                 type="file"
                 disabled={!useFileMode}
                 onChange={(e) =>
                   setForm({ ...form, file: e.target.files?.[0] || null })
+                }
+              />
+              <input
+                type="file"
+                disabled={!useFileMode}
+                onChange={(e) =>
+                  setForm({ ...form, file_2: e.target.files?.[0] || null })
                 }
               />
             </div>
@@ -402,7 +407,8 @@ export default function OwnerLiteratures() {
             <th>{t('university')}</th>
             <th>{t('subject')}</th>
             <th>{t('course')}</th>
-            <th>{t('file')}</th>
+            <th>{t('file1')}</th>
+            <th>{t('file2')}</th>
             <th>{t('action')}</th>
           </tr>
         </thead>
@@ -422,27 +428,35 @@ export default function OwnerLiteratures() {
                 {(() => {
                   const sub = subjects.find((s) => s.id === l.subject_id)
                   if (!sub) return '-'
-
                   const dirs = sub.direction_ids || []
                   const courses = dirs
                     .map((id) => directions.find((d) => d.id === id))
                     .filter(Boolean)
                     .map((d) => d.course)
-
                   return courses.length
                     ? courses.map((c) => `${c} ${t('course')}`).join(', ')
                     : '-'
                 })()}
               </td>
-
-              <td>{l.file_path ? t('available') : '-'}</td>
+              <td>
+                {l.file_path ? (
+                  <button onClick={() => onDownload(l.id, 1)}>
+                    <Download />
+                  </button>
+                ) : (
+                  '-'
+                )}
+              </td>
+              <td>
+                {l.file_path_2 ? (
+                  <button onClick={() => onDownload(l.id, 2)}>
+                    <Download />
+                  </button>
+                ) : (
+                  '-'
+                )}
+              </td>
               <td style={{ display: 'flex', gap: 6 }}>
-                <button
-                  disabled={!l.file_path}
-                  onClick={() => onDownload(l.id)}
-                >
-                  <Download />
-                </button>
                 <button onClick={() => startEdit(l)}>
                   <Pencil />
                 </button>
@@ -452,38 +466,32 @@ export default function OwnerLiteratures() {
               </td>
             </tr>
           ))}
-          {/* ПАГИНАЦИЯ */}
-          <div className="pagination">
-            <button onClick={prev} disabled={page === 1}>
-              <ChevronLeft />
-            </button>
-
-            {[...Array(maxPage)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i + 1)}
-                className={`pageBtn ${page === i + 1 ? 'active' : ''}`}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            <button onClick={next} disabled={page === maxPage}>
-              <ChevronRight />
-            </button>
-          </div>
-          {!loading && !filtered.length && (
-            <tr>
-              <td
-                colSpan={9}
-                style={{ textAlign: 'center', opacity: 0.7, padding: 12 }}
-              >
-                Пусто
-              </td>
-            </tr>
-          )}
         </tbody>
       </table>
+
+      <div className="pagination">
+        <button onClick={prev} disabled={page === 1}>
+          <ChevronLeft />
+        </button>
+        {[...Array(maxPage)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i + 1)}
+            className={`pageBtn ${page === i + 1 ? 'active' : ''}`}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button onClick={next} disabled={page === maxPage}>
+          <ChevronRight />
+        </button>
+      </div>
+
+      {!loading && !filtered.length && (
+        <div style={{ textAlign: 'center', opacity: 0.7, padding: 12 }}>
+          Пусто
+        </div>
+      )}
     </div>
   )
 }
