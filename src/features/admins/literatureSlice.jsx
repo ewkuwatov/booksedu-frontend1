@@ -6,7 +6,6 @@ const toFormData = (obj = {}) => {
   const fd = new FormData()
   Object.entries(obj).forEach(([k, v]) => {
     if (v === undefined || v === null) return
-    // массивы
     if (Array.isArray(v)) {
       v.forEach((x) => fd.append(k, x))
     } else {
@@ -33,12 +32,57 @@ export const fetchAllLiteraturesThunk = createAsyncThunk(
   },
 )
 
-// create (multipart)
+// create (json)
+export const createLiteratureThunk = createAsyncThunk(
+  'literatures/create',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const { data } = await http.post('/literatures/', payload)
+      return data
+    } catch (e) {
+      return rejectWithValue(
+        e.response?.data?.detail || 'Create literature failed',
+      )
+    }
+  },
+)
+
+// update (json)
+export const updateLiteratureThunk = createAsyncThunk(
+  'literatures/update',
+  async ({ id, updated }, { rejectWithValue }) => {
+    try {
+      const { data } = await http.put(`/literatures/${id}`, updated)
+      return data
+    } catch (e) {
+      return rejectWithValue(
+        e.response?.data?.detail || 'Update literature failed',
+      )
+    }
+  },
+)
+
+// delete
+export const deleteLiteratureThunk = createAsyncThunk(
+  'literatures/delete',
+  async (id, { rejectWithValue }) => {
+    try {
+      await http.delete(`/literatures/${id}`)
+      return id
+    } catch (e) {
+      return rejectWithValue(
+        e.response?.data?.detail || 'Delete literature failed',
+      )
+    }
+  },
+)
+
+// multipart: create with file
 export const createLiteratureUploadThunk = createAsyncThunk(
   'literatures/createUpload',
   async (payload, { rejectWithValue }) => {
     try {
-      const fd = toFormData(payload) // может содержать file и file_2
+      const fd = toFormData(payload)
       const { data } = await http.post('/literatures/upload', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
@@ -51,12 +95,12 @@ export const createLiteratureUploadThunk = createAsyncThunk(
   },
 )
 
-// update (multipart)
+// multipart: update with file
 export const updateLiteratureUploadThunk = createAsyncThunk(
   'literatures/updateUpload',
   async ({ id, updated }, { rejectWithValue }) => {
     try {
-      const fd = toFormData(updated) // file и file_2
+      const fd = toFormData(updated)
       const { data } = await http.put(`/literatures/upload/${id}`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
@@ -69,7 +113,7 @@ export const updateLiteratureUploadThunk = createAsyncThunk(
   },
 )
 
-// download file
+// download (можно выбрать fileNumber)
 export const downloadLiteratureFileThunk = createAsyncThunk(
   'literatures/download',
   async ({ id, fileNumber = 1 }, { rejectWithValue }) => {
@@ -78,9 +122,8 @@ export const downloadLiteratureFileThunk = createAsyncThunk(
         responseType: 'blob',
       })
 
-      const disposition = res.headers['content-disposition']
       let filename = `literature_${id}`
-
+      const disposition = res.headers['content-disposition']
       if (disposition) {
         const match = disposition.match(/filename="?(.+?)"?$/)
         if (match && match[1]) filename = match[1]
@@ -135,7 +178,15 @@ const literatureSlice = createSlice({
         s.error = payload
       })
 
-      // create
+      // create (json)
+      .addCase(createLiteratureThunk.fulfilled, (s, { payload }) => {
+        s.items.push(payload)
+      })
+      .addCase(createLiteratureThunk.rejected, (s, { payload }) => {
+        s.error = payload
+      })
+
+      // create (upload)
       .addCase(createLiteratureUploadThunk.fulfilled, (s, { payload }) => {
         s.items.push(payload)
       })
@@ -143,12 +194,30 @@ const literatureSlice = createSlice({
         s.error = payload
       })
 
-      // update
+      // update (json)
+      .addCase(updateLiteratureThunk.fulfilled, (s, { payload }) => {
+        s.items = s.items.map((x) => (x.id === payload.id ? payload : x))
+        if (s.current?.id === payload.id) s.current = payload
+      })
+      .addCase(updateLiteratureThunk.rejected, (s, { payload }) => {
+        s.error = payload
+      })
+
+      // update (upload)
       .addCase(updateLiteratureUploadThunk.fulfilled, (s, { payload }) => {
         s.items = s.items.map((x) => (x.id === payload.id ? payload : x))
         if (s.current?.id === payload.id) s.current = payload
       })
       .addCase(updateLiteratureUploadThunk.rejected, (s, { payload }) => {
+        s.error = payload
+      })
+
+      // delete
+      .addCase(deleteLiteratureThunk.fulfilled, (s, { payload }) => {
+        s.items = s.items.filter((x) => x.id !== payload)
+        if (s.current?.id === payload) s.current = null
+      })
+      .addCase(deleteLiteratureThunk.rejected, (s, { payload }) => {
         s.error = payload
       })
   },
