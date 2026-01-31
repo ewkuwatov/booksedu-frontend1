@@ -1,22 +1,38 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { http } from '../../api/http'
 
-// helpers
+/* ===========================
+   Helpers
+=========================== */
+
 const toFormData = (obj = {}) => {
   const fd = new FormData()
-  Object.entries(obj).forEach(([k, v]) => {
-    if (v === undefined || v === null) return
-    // массивы (напр., если когда-то пойдут tags[])
-    if (Array.isArray(v)) {
-      v.forEach((x) => fd.append(k, x))
-    } else {
-      fd.append(k, v)
+
+  Object.entries(obj).forEach(([key, value]) => {
+    if (value === undefined || value === null) return
+
+    // File / Blob
+    if (value instanceof File) {
+      fd.append(key, value)
+      return
     }
+
+    // arrays
+    if (Array.isArray(value)) {
+      value.forEach((v) => fd.append(key, v))
+      return
+    }
+
+    fd.append(key, value)
   })
+
   return fd
 }
 
-// ===== Thunks =====
+/* ===========================
+   Thunks
+=========================== */
+
 export const fetchAllLiteraturesThunk = createAsyncThunk(
   'literatures/fetchAll',
   async (_, { rejectWithValue }) => {
@@ -25,10 +41,10 @@ export const fetchAllLiteraturesThunk = createAsyncThunk(
       return data
     } catch (e) {
       return rejectWithValue(
-        e.response?.data?.detail || 'Fetch literatures failed'
+        e.response?.data?.detail || 'Fetch literatures failed',
       )
     }
-  }
+  },
 )
 
 export const createLiteratureThunk = createAsyncThunk(
@@ -39,10 +55,10 @@ export const createLiteratureThunk = createAsyncThunk(
       return data
     } catch (e) {
       return rejectWithValue(
-        e.response?.data?.detail || 'Create literature failed'
+        e.response?.data?.detail || 'Create literature failed',
       )
     }
-  }
+  },
 )
 
 export const updateLiteratureThunk = createAsyncThunk(
@@ -53,10 +69,10 @@ export const updateLiteratureThunk = createAsyncThunk(
       return data
     } catch (e) {
       return rejectWithValue(
-        e.response?.data?.detail || 'Update literature failed'
+        e.response?.data?.detail || 'Update literature failed',
       )
     }
-  }
+  },
 )
 
 export const deleteLiteratureThunk = createAsyncThunk(
@@ -67,67 +83,75 @@ export const deleteLiteratureThunk = createAsyncThunk(
       return id
     } catch (e) {
       return rejectWithValue(
-        e.response?.data?.detail || 'Delete literature failed'
+        e.response?.data?.detail || 'Delete literature failed',
       )
     }
-  }
+  },
 )
 
-// multipart: create with file
+/* ===========================
+   Upload (file / file2)
+=========================== */
+
 export const createLiteratureUploadThunk = createAsyncThunk(
   'literatures/createUpload',
   async (payload, { rejectWithValue }) => {
     try {
-      const fd = toFormData(payload) // { ...fields, file: File }
+      const fd = toFormData(payload)
+
       const { data } = await http.post('/literatures/upload', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
+
       return data
     } catch (e) {
       return rejectWithValue(
-        e.response?.data?.detail || 'Create (upload) failed'
+        e.response?.data?.detail || 'Create (upload) failed',
       )
     }
-  }
+  },
 )
 
-// multipart: update with file
 export const updateLiteratureUploadThunk = createAsyncThunk(
   'literatures/updateUpload',
   async ({ id, updated }, { rejectWithValue }) => {
     try {
       const fd = toFormData(updated)
+
       const { data } = await http.put(`/literatures/upload/${id}`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
+
       return data
     } catch (e) {
       return rejectWithValue(
-        e.response?.data?.detail || 'Update (upload) failed'
+        e.response?.data?.detail || 'Update (upload) failed',
       )
     }
-  }
+  },
 )
 
-// download (вернёт blob + имя файла из Content-Disposition, если нужно — можно доработать)
+/* ===========================
+   Download
+=========================== */
+
 export const downloadLiteratureFileThunk = createAsyncThunk(
   'literatures/download',
-  async (id, { rejectWithValue }) => {
+  async ({ id, fileNumber = 1 }, { rejectWithValue }) => {
     try {
-      const res = await http.get(`/literatures/${id}/download`, {
-        responseType: 'blob',
-      })
+      const res = await http.get(
+        `/literatures/${id}/download?file=${fileNumber}`,
+        { responseType: 'blob' },
+      )
 
-      // Получаем имя из заголовка Content-Disposition
       const disposition = res.headers['content-disposition']
       let filename = `literature_${id}`
 
       if (disposition) {
         const match = disposition.match(/filename="?(.+?)"?$/)
-        if (match && match[1]) filename = match[1]
+        if (match?.[1]) filename = match[1]
       }
 
-      // Создаём blob URL
       const blobUrl = window.URL.createObjectURL(res.data)
       const a = document.createElement('a')
       a.href = blobUrl
@@ -141,9 +165,12 @@ export const downloadLiteratureFileThunk = createAsyncThunk(
     } catch (e) {
       return rejectWithValue(e.response?.data?.detail || 'Download failed')
     }
-  }
+  },
 )
 
+/* ===========================
+   Slice
+=========================== */
 
 const literatureSlice = createSlice({
   name: 'literatures',
@@ -154,74 +181,58 @@ const literatureSlice = createSlice({
     error: null,
   },
   reducers: {
-    setCurrentLiterature: (s, a) => {
-      s.current = a.payload
+    setCurrentLiterature: (state, action) => {
+      state.current = action.payload
     },
-    clearError: (s) => {
-      s.error = null
+    clearError: (state) => {
+      state.error = null
     },
   },
-  extraReducers: (b) => {
-    b
-      // fetch all
+  extraReducers: (builder) => {
+    builder
+      // fetch
       .addCase(fetchAllLiteraturesThunk.pending, (s) => {
         s.loading = true
         s.error = null
       })
       .addCase(fetchAllLiteraturesThunk.fulfilled, (s, { payload }) => {
         s.loading = false
-        s.items = payload.sort((a, b) => a.id - b.id)
+        s.items = payload
       })
       .addCase(fetchAllLiteraturesThunk.rejected, (s, { payload }) => {
         s.loading = false
         s.error = payload
       })
 
-      // create (json)
+      // create
       .addCase(createLiteratureThunk.fulfilled, (s, { payload }) => {
         s.items.push(payload)
       })
-      .addCase(createLiteratureThunk.rejected, (s, { payload }) => {
-        s.error = payload
-      })
 
-      // create (upload)
+      // upload create
       .addCase(createLiteratureUploadThunk.fulfilled, (s, { payload }) => {
         s.items.push(payload)
       })
-      .addCase(createLiteratureUploadThunk.rejected, (s, { payload }) => {
-        s.error = payload
-      })
 
-      // update (json)
+      // update
       .addCase(updateLiteratureThunk.fulfilled, (s, { payload }) => {
-        s.items = s.items.map((x) => (x.id === payload.id ? payload : x))
-        if (s.current?.id === payload.id) s.current = payload
-      })
-      .addCase(updateLiteratureThunk.rejected, (s, { payload }) => {
-        s.error = payload
+        s.items = s.items.map((i) => (i.id === payload.id ? payload : i))
       })
 
-      // update (upload)
+      // update upload
       .addCase(updateLiteratureUploadThunk.fulfilled, (s, { payload }) => {
-        s.items = s.items.map((x) => (x.id === payload.id ? payload : x))
-        if (s.current?.id === payload.id) s.current = payload
-      })
-      .addCase(updateLiteratureUploadThunk.rejected, (s, { payload }) => {
-        s.error = payload
+        s.items = s.items.map((i) => (i.id === payload.id ? payload : i))
       })
 
       // delete
       .addCase(deleteLiteratureThunk.fulfilled, (s, { payload }) => {
-        s.items = s.items.filter((x) => x.id !== payload)
-        if (s.current?.id === payload) s.current = null
-      })
-      .addCase(deleteLiteratureThunk.rejected, (s, { payload }) => {
-        s.error = payload
+        s.items = s.items.filter((i) => i.id !== payload)
       })
   },
 })
 
-export const selectLiterature = (state) => state.literatures
 export const { setCurrentLiterature, clearError } = literatureSlice.actions
+
+export const selectLiterature = (state) => state.literatures
+
 export default literatureSlice.reducer
