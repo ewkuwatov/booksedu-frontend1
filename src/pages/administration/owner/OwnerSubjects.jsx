@@ -21,6 +21,7 @@ import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
 import { usePagination } from '../../../hooks/usePagination'
 import { ChevronLeft, ChevronRight, Trash, Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import Input from '../../../components/UI/Input'
 
 const OwnerSubjects = () => {
   const { t } = useTranslation()
@@ -33,7 +34,12 @@ const OwnerSubjects = () => {
 
   const [openForm, setOpenForm] = useState(false)
   const [editId, setEditId] = useState(null)
+
+  // search in FORM (directions)
   const [directionSearch, setDirectionSearch] = useState('')
+
+  // search in TABLE
+  const [search, setSearch] = useState('')
 
   const [subjectsForm, setSubjectsForm] = useState([
     {
@@ -126,18 +132,52 @@ const OwnerSubjects = () => {
     await dispatch(fetchDeleteSubjectsThunk(id))
   }
 
+  /* ================= SEARCH + FILTER ================= */
+
+  const filteredSubjects = subjects.filter((s) => {
+    if (!search) return true
+
+    const univerName = univers.find((u) => u.id === s.university_id)?.name || ''
+
+    const kafedraName = kafedras.find((k) => k.id === s.kafedra_id)?.name || ''
+
+    const directionNames = (s.direction_ids || [])
+      .map((id) => directions.find((d) => d.id === id)?.name)
+      .join(' ')
+
+    const target = `
+      ${s.name}
+      ${univerName}
+      ${kafedraName}
+      ${directionNames}
+    `.toLowerCase()
+
+    return target.includes(search.toLowerCase())
+  })
+
   const { page, maxPage, currentData, next, prev, goTo } = usePagination(
-    subjects,
+    filteredSubjects,
     10,
   )
+
+  useEffect(() => {
+    goTo(1)
+  }, [search])
 
   /* ================= JSX ================= */
 
   return (
     <div className="subjects-admin">
-      <h1>📚 {t('subjects')}</h1>
-
-      <button onClick={() => setOpenForm(true)}>{t('add')}</button>
+      <h1>{t('subjects')}</h1>
+      <div className="filter-block">
+        <button onClick={() => setOpenForm(true)}>{t('add')}</button>
+        {/* SEARCH */}
+        <Input
+          placeholder={t('search')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
       {openForm && (
         <div className="modal-overlay">
@@ -213,9 +253,7 @@ const OwnerSubjects = () => {
                               checked={subj.direction_ids.includes(d.id)}
                               onChange={() => toggleDirection(index, d.id)}
                             />
-                            <span>
-                              {d.name} ({d.course})
-                            </span>
+                            <span>{d.name}</span>
                           </label>
                         ))}
 
@@ -229,7 +267,6 @@ const OwnerSubjects = () => {
             })}
 
             <button type="submit">{editId ? t('save') : t('add')}</button>
-
             <button
               type="button"
               onClick={() => {
@@ -243,6 +280,7 @@ const OwnerSubjects = () => {
         </div>
       )}
 
+      {/* TABLE */}
       <table>
         <thead>
           <tr>
@@ -279,6 +317,7 @@ const OwnerSubjects = () => {
         </tbody>
       </table>
 
+      {/* PAGINATION */}
       <div className="pagination">
         <button onClick={prev} disabled={page === 1}>
           <ChevronLeft />

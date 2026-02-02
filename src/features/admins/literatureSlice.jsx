@@ -140,7 +140,7 @@ export const downloadLiteratureFileThunk = createAsyncThunk(
   async ({ id, fileNumber = 1 }, { rejectWithValue }) => {
     try {
       const res = await http.get(
-        `/literatures/${id}/download?file=${fileNumber}`,
+        `/literatures/${id}/download/${fileNumber}`,
         { responseType: 'blob' },
       )
 

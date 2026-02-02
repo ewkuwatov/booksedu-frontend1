@@ -1,6 +1,7 @@
 @import './styles/administartion/AdminLayout.css';
 @import './styles/administartion/UniversitiesAdmin.css';
 @import './styles/administartion/OwnerSubjects.css';
+@import './styles/administartion/OwnerDirections.css';
 @import './styles/header.css';
 @import './styles/navbar.css';
 @import './styles/ourNumbers.css';

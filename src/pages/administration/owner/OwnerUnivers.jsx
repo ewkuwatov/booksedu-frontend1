@@ -165,12 +165,14 @@ const OwnerUnivers = () => {
         {items.map((u, i) => (
           <li key={u.id}>
             {i + 1}. {u.name}
-            <Button onClick={() => openEditForm(u)}>
-              <Pencil />
-            </Button>
-            <Button onClick={() => handlerDelete(u.id)}>
-              <Trash />
-            </Button>
+            <div className="btnBox">
+              <Button onClick={() => openEditForm(u)}>
+                <Pencil />
+              </Button>
+              <Button onClick={() => handlerDelete(u.id)}>
+                <Trash />
+              </Button>
+            </div>
           </li>
         ))}
       </ul>

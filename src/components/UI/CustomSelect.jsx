@@ -49,11 +49,13 @@ const CustomSelect = ({
             top: '105%',
             left: 0,
             width: '100%',
+            height: '300px',
             background: '#fff',
             border: '1px solid #ccc',
             borderRadius: '6px',
             boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
             zIndex: 999,
+            overflowY: 'scroll',
           }}
         >
           {options.map((o) => (

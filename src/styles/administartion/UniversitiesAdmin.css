@@ -1,15 +1,25 @@
 /* ===== Общий контейнер ===== */
-.universities-admin {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 .universities-admin h2 {
   font-size: 1.5rem;
   font-weight: 600;
   color: #222;
 }
+
+.universities-admin ul {
+  width: 50%;
+}
+
+.universities-admin ul li{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.universities-admin ul li .btnBox button {
+  margin: 0 5px;
+}
+
 
 /* ===== Кнопка открытия формы ===== */
 .toggle-form-btn {
