@@ -18,8 +18,13 @@ import { Pencil, ChevronLeft, ChevronRight, Trash } from 'lucide-react'
 const OwnerDirections = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
+
   const { items: directions } = useSelector(selectDirection)
   const { items: univers } = useSelector(selectUniver)
+
+  // ---- SEARCH & FILTER ----
+  const [search, setSearch] = useState('')
+  const [filterUniver, setFilterUniver] = useState('')
 
   // ---- CRUD ----
   const {
@@ -36,13 +41,12 @@ const OwnerDirections = () => {
     initialForm: {
       number: '',
       name: '',
-      courses: [], // [{course, students}]
+      courses: [],
       university_id: null,
     },
 
     fetchAll: () => dispatch(fetchAllDirectionThunk()).unwrap(),
 
-    // CREATE MULTIPLE
     add: async (data) => {
       const { number, name, university_id, courses } = data
 
@@ -55,12 +59,11 @@ const OwnerDirections = () => {
             course: item.course,
             student_count:
               item.students === null ? null : Number(item.students),
-          })
+          }),
         ).unwrap()
       }
     },
 
-    // UPDATE = delete old → create new
     update: async (id, data) => {
       const { number, name, university_id, courses } = data
 
@@ -75,7 +78,7 @@ const OwnerDirections = () => {
             course: item.course,
             student_count:
               item.students === null ? null : Number(item.students),
-          })
+          }),
         ).unwrap()
       }
     },
@@ -87,16 +90,31 @@ const OwnerDirections = () => {
     dispatch(fetchAllUniverThunk()).unwrap()
   }, [dispatch])
 
-  const [filterUniver, setFilterUniver] = useState('')
+  // ---- FILTER + SEARCH LOGIC ----
+  const filtered = directions.filter((d) => {
+    const byUniver = filterUniver
+      ? d.university_id === Number(filterUniver)
+      : true
 
-  const filtered = filterUniver
-    ? directions.filter((d) => d.university_id === Number(filterUniver))
-    : directions
+    const univerName = univers.find((u) => u.id === d.university_id)?.name || ''
+
+    const bySearch = search
+      ? d.name?.toLowerCase().includes(search.toLowerCase()) ||
+        d.number?.toLowerCase().includes(search.toLowerCase()) ||
+        univerName.toLowerCase().includes(search.toLowerCase())
+      : true
+
+    return byUniver && bySearch
+  })
 
   const { page, maxPage, currentData, next, prev, goTo } = usePagination(
     filtered,
-    10
+    10,
   )
+
+  useEffect(() => {
+    goTo(1)
+  }, [search, filterUniver])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -105,18 +123,18 @@ const OwnerDirections = () => {
 
   return (
     <div className="directions-container">
-      <Button
-        onClick={() => {
-          resetForm()
-          setOpenForm(true)
-        }}
-        className="toggle-form-btn"
-      >
-        {t('add')}
-      </Button>
-
-      {/* FILTER */}
+      <h2>{t('directions')}</h2>
+      {/* FILTERS */}
       <div className="filter-block">
+        <Button
+          onClick={() => {
+            resetForm()
+            setOpenForm(true)
+          }}
+          className="toggle-form-btn"
+        >
+          {t('add')}
+        </Button>
         <select
           value={filterUniver}
           onChange={(e) => setFilterUniver(e.target.value)}
@@ -128,6 +146,12 @@ const OwnerDirections = () => {
             </option>
           ))}
         </select>
+
+        <Input
+          placeholder={t('search')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
       {/* FORM */}
@@ -169,13 +193,13 @@ const OwnerDirections = () => {
                             setForm({
                               ...form,
                               courses: form.courses.filter(
-                                (c) => c.course !== course
+                                (c) => c.course !== course,
                               ),
                             })
                           }
                         }}
                       />
-                      <span>{course}-курс</span>
+                      <span>{course}-kurs</span>
 
                       {selected && (
                         <input
@@ -188,8 +212,8 @@ const OwnerDirections = () => {
                           }
                           onChange={(e) => {
                             let value = e.target.value
-                            value = value.replace(/\D+/g, '')
-                            value = value.replace(/^0+/, '')
+                              .replace(/\D+/g, '')
+                              .replace(/^0+/, '')
 
                             setForm({
                               ...form,
@@ -200,7 +224,7 @@ const OwnerDirections = () => {
                                       students:
                                         value === '' ? null : Number(value),
                                     }
-                                  : c
+                                  : c,
                               ),
                             })
                           }}

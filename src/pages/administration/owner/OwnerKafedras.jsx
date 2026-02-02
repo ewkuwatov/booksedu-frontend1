@@ -52,21 +52,12 @@ const OwnerKafedras = () => {
   // === ПАГИНАЦИЯ ===
   const { page, maxPage, currentData, next, prev, goTo } = usePagination(
     filtered,
-    10
+    10,
   )
 
   return (
     <div className="kafedra-admin">
-      {/* Кнопка добавить */}
-      <button
-        onClick={() => {
-          resetForm()
-          setOpenForm(true)
-        }}
-        className="primary-btn"
-      >
-        {t('add')}
-      </button>
+      <h2>{t('kafedras')}</h2>
 
       {/* МОДАЛКА */}
       {openForm && (
@@ -111,6 +102,16 @@ const OwnerKafedras = () => {
 
       {/* ФИЛЬТР */}
       <div className="filter-block">
+        {/* Кнопка добавить */}
+        <button
+          onClick={() => {
+            resetForm()
+            setOpenForm(true)
+          }}
+          className="primary-btn"
+        >
+          {t('add')}
+        </button>
         <select
           value={filterUniver}
           onChange={(e) => setFilterUniver(e.target.value)}
@@ -143,7 +144,9 @@ const OwnerKafedras = () => {
                 {univers.find((u) => u.id === k.university_id)?.name || '-'}
               </td>
               <td>
-                <button onClick={() => startEditing(k)}><Pencil /></button>
+                <button onClick={() => startEditing(k)}>
+                  <Pencil />
+                </button>
                 <button onClick={() => handleDelete(k.id)}>
                   <Trash />
                 </button>

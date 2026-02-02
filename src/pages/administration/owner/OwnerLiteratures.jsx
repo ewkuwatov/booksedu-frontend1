@@ -12,7 +12,7 @@ import {
   downloadLiteratureFileThunk,
 } from '../../../features/admins/literatureSlice'
 
-import { selectDirection, selectSubject, selectUniver } from '../../../store'
+import { selectSubject, selectUniver } from '../../../store'
 import { fetchAllDirectionThunk } from '../../../features/admins/directionSlice'
 
 import { fetchAllGetSubjectsThunk } from '../../../features/admins/subjectSlice'
@@ -62,7 +62,6 @@ const emptyForm = {
 export default function OwnerLiteratures() {
   const { t } = useTranslation()
   const dispatch = useDispatch()
-  const { items: directions } = useSelector(selectDirection)
   const { items: literatures, loading, error } = useSelector(selectLiterature)
   const { items: subjects } = useSelector(selectSubject)
   const { items: univers } = useSelector(selectUniver)
@@ -74,6 +73,7 @@ export default function OwnerLiteratures() {
   const [form, setForm] = useState(emptyForm)
   const [useFileMode, setUseFileMode] = useState(false) // JSON или multipart
   const [useFileMode2, setUseFileMode2] = useState(false)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     dispatch(fetchAllUniverThunk()).unwrap()
@@ -83,13 +83,35 @@ export default function OwnerLiteratures() {
   }, [dispatch])
 
   const filtered = useMemo(() => {
-    let x = literatures
-    if (filterUniver)
-      x = x.filter((i) => i.university_id === Number(filterUniver))
-    if (filterSubject)
-      x = x.filter((i) => i.subject_id === Number(filterSubject))
-    return x
-  }, [literatures, filterUniver, filterSubject])
+    return literatures.filter((l) => {
+      // фильтр по университету
+      if (filterUniver && l.university_id !== Number(filterUniver)) return false
+
+      // фильтр по предмету
+      if (filterSubject && l.subject_id !== Number(filterSubject)) return false
+
+      // если нет текста поиска — пропускаем
+      if (!search) return true
+
+      const univerName =
+        univers.find((u) => u.id === l.university_id)?.name || ''
+      const subjectName =
+        subjects.find((s) => s.id === l.subject_id)?.name || ''
+
+      const target = `
+      ${l.title}
+      ${l.kind}
+      ${l.author}
+      ${l.publisher}
+      ${l.language}
+      ${l.font_type}
+      ${univerName}
+      ${subjectName}
+    `.toLowerCase()
+
+      return target.includes(search.toLowerCase())
+    })
+  }, [literatures, filterUniver, filterSubject, search, univers, subjects])
 
   const getName = (arr, id) => arr.find((a) => a.id === id)?.name || '-'
 
@@ -138,6 +160,12 @@ export default function OwnerLiteratures() {
       university_id: Number(form.university_id),
     }
 
+    const uploadPayload = {
+      ...payload,
+      ...(useFileMode && form.file ? { file: form.file } : {}),
+      ...(useFileMode2 && form.file2 ? { file2: form.file2 } : {}),
+    }
+
     if (
       !payload.title ||
       !payload.kind ||
@@ -151,7 +179,7 @@ export default function OwnerLiteratures() {
         await dispatch(
           updateLiteratureUploadThunk({
             id: editingId,
-            updated: { ...payload, file: form.file },
+            updated: uploadPayload,
           }),
         ).unwrap()
       } else {
@@ -179,8 +207,8 @@ export default function OwnerLiteratures() {
     await dispatch(deleteLiteratureThunk(id)).unwrap()
   }
 
-  const onDownload = async (id) => {
-    await dispatch(downloadLiteratureFileThunk(id)).unwrap()
+  const onDownload = async (id, fileNumber = 1) => {
+    await dispatch(downloadLiteratureFileThunk({ id, fileNumber })).unwrap()
   }
 
   // === ПАГИНАЦИЯ ===
@@ -189,18 +217,16 @@ export default function OwnerLiteratures() {
     10,
   )
 
+    useEffect(() => {
+      goTo(1)
+    }, [search, filterUniver, filterSubject, filtered.length])
+
   return (
     <div style={{ padding: 16 }}>
       <h1>Literatures</h1>
 
-      <div
-        style={{
-          display: 'flex',
-          gap: 8,
-          alignItems: 'center',
-          marginBottom: 12,
-        }}
-      >
+      <div className="filter-block">
+        <button onClick={startAdd}>{t('add')}</button>
         <select
           value={filterUniver}
           onChange={(e) => setFilterUniver(e.target.value)}
@@ -225,7 +251,11 @@ export default function OwnerLiteratures() {
           ))}
         </select>
 
-        <button onClick={startAdd}>{t('add')}</button>
+        <input
+          placeholder={t('search')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
       {openForm && (
@@ -426,7 +456,6 @@ export default function OwnerLiteratures() {
             <th>{t('year')}</th>
             <th>{t('university')}</th>
             <th>{t('subject')}</th>
-            <th>{t('course')}</th>
             <th>{t('file')}</th>
             <th>{t('file2')}</th>
             <th>{t('action')}</th>
@@ -444,61 +473,35 @@ export default function OwnerLiteratures() {
               <td>{l.year}</td>
               <td>{getName(univers, l.university_id)}</td>
               <td>{getName(subjects, l.subject_id)}</td>
-              <td>
-                {(() => {
-                  const sub = subjects.find((s) => s.id === l.subject_id)
-                  if (!sub) return '-'
-
-                  const dirs = sub.direction_ids || []
-                  const courses = dirs
-                    .map((id) => directions.find((d) => d.id === id))
-                    .filter(Boolean)
-                    .map((d) => d.course)
-
-                  return courses.length
-                    ? courses.map((c) => `${c} ${t('course')}`).join(', ')
-                    : '-'
-                })()}
-              </td>
-
               <td>{l.file_path ? t('available') : '-'}</td>
               <td>{l.file_path_2 ? t('available') : '-'}</td>
               <td style={{ display: 'flex', gap: 6 }}>
                 <button
                   disabled={!l.file_path}
-                  onClick={() => onDownload(l.id)}
+                  onClick={() => onDownload(l.id, 1)}
+                  title="Download file 1"
                 >
                   <Download />
                 </button>
+
+                <button
+                  disabled={!l.file_path_2}
+                  onClick={() => onDownload(l.id, 2)}
+                  title="Download file 2"
+                >
+                  <Download />
+                </button>
+
                 <button onClick={() => startEdit(l)}>
                   <Pencil />
                 </button>
+
                 <button onClick={() => onDelete(l.id)}>
                   <Trash />
                 </button>
               </td>
             </tr>
           ))}
-          {/* ПАГИНАЦИЯ */}
-          <div className="pagination">
-            <button onClick={prev} disabled={page === 1}>
-              <ChevronLeft />
-            </button>
-
-            {[...Array(maxPage)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i + 1)}
-                className={`pageBtn ${page === i + 1 ? 'active' : ''}`}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            <button onClick={next} disabled={page === maxPage}>
-              <ChevronRight />
-            </button>
-          </div>
           {!loading && !filtered.length && (
             <tr>
               <td
@@ -511,6 +514,26 @@ export default function OwnerLiteratures() {
           )}
         </tbody>
       </table>
+      {/* ПАГИНАЦИЯ */}
+      <div className="pagination">
+        <button onClick={prev} disabled={page === 1}>
+          <ChevronLeft />
+        </button>
+
+        {[...Array(maxPage)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i + 1)}
+            className={`pageBtn ${page === i + 1 ? 'active' : ''}`}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button onClick={next} disabled={page === maxPage}>
+          <ChevronRight />
+        </button>
+      </div>
     </div>
   )
 }
