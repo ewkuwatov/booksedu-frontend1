@@ -160,10 +160,6 @@ const OwnerSubjects = () => {
     10,
   )
 
-  useEffect(() => {
-    goTo(1)
-  }, [search])
-
   /* ================= JSX ================= */
 
   return (

@@ -217,10 +217,6 @@ export default function OwnerLiteratures() {
     10,
   )
 
-    useEffect(() => {
-      goTo(1)
-    }, [search, filterUniver, filterSubject, filtered.length])
-
   return (
     <div style={{ padding: 16 }}>
       <h1>Literatures</h1>
