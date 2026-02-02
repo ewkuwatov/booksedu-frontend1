@@ -73,6 +73,7 @@ export default function OwnerLiteratures() {
   const [editingId, setEditingId] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [useFileMode, setUseFileMode] = useState(false) // JSON или multipart
+  const [useFileMode2, setUseFileMode2] = useState(false)
 
   useEffect(() => {
     dispatch(fetchAllUniverThunk()).unwrap()
@@ -96,12 +97,14 @@ export default function OwnerLiteratures() {
     setEditingId(null)
     setForm(emptyForm)
     setUseFileMode(false)
+    setUseFileMode2(false)
     setOpenForm(true)
   }
 
   const startEdit = (item) => {
     setEditingId(item.id)
     setUseFileMode(false)
+    setUseFileMode2(false)
     setForm({
       title: item.title ?? '',
       kind: item.kind ?? '',
@@ -144,22 +147,22 @@ export default function OwnerLiteratures() {
       return
 
     if (editingId) {
-      if (useFileMode && form.file) {
+      if ((useFileMode && form.file) || (useFileMode2 && form.file2)) {
         await dispatch(
           updateLiteratureUploadThunk({
             id: editingId,
             updated: { ...payload, file: form.file },
-          })
+          }),
         ).unwrap()
       } else {
         await dispatch(
-          updateLiteratureThunk({ id: editingId, updated: payload })
+          updateLiteratureThunk({ id: editingId, updated: payload }),
         ).unwrap()
       }
     } else {
-      if (useFileMode && form.file) {
+      if ((useFileMode && form.file) || (useFileMode2 && form.file2)) {
         await dispatch(
-          createLiteratureUploadThunk({ ...payload, file: form.file })
+          createLiteratureUploadThunk({ ...payload, file: form.file }),
         ).unwrap()
       } else {
         await dispatch(createLiteratureThunk(payload)).unwrap()
@@ -183,7 +186,7 @@ export default function OwnerLiteratures() {
   // === ПАГИНАЦИЯ ===
   const { page, maxPage, currentData, next, prev, goTo } = usePagination(
     filtered,
-    10
+    10,
   )
 
   return (
@@ -372,10 +375,18 @@ export default function OwnerLiteratures() {
               />
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <label>{t('attach_file')} 2</label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={useFileMode2}
+                  onChange={(e) => setUseFileMode2(e.target.checked)}
+                />{' '}
+                {t('attach_file')} 2
+              </label>
+
               <input
                 type="file"
-                disabled={!useFileMode}
+                disabled={!useFileMode2}
                 onChange={(e) =>
                   setForm({ ...form, file2: e.target.files?.[0] || null })
                 }
